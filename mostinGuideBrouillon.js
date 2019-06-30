@@ -35,17 +35,25 @@ client.on('message', async message => {
 			const splitArgs = commandArgs.split(' ');
 			//on prend le premier
 			const matiere = splitArgs.shift();
+			//on remet les arguments en chaine de caractere
+			//const autreCol = splitArgs.join(' ');
 
 			try {
 				// equivalent to: INSERT INTO tags (name, description, username) values (?, ?, ?);
 				//on insert tagName dans la colonne name, tagDescription dans description et le nom de l'auteur du message dans username
 				const ligneTab = await Horodateur.create({
 					matiere: matiere,
+					//description: description,
+					//username: message.author.username,
+
 				});
 				//le bot envoi un message pour dire que le tag a bien ete ajouté.
 				return message.reply(`Matiere: ${matiere} added.`);
 			}
 			catch (e) {
+				if (e.name === 'SequelizeUniqueConstraintError') {
+					return message.reply('That tag already exists.');
+				}
 				return message.reply('Something went wrong with adding a tag.');
 			}
 		}
@@ -56,7 +64,7 @@ client.on('message', async message => {
 			// equivalent to: SELECT * FROM tags WHERE name = 'tagName' LIMIT 1;
 			const matiere = await Horodateur.findOne({ where: { matiere: matiereName } });
 			if (matiere) {
-				return message.channel.send(`id | matiere | createdAt | updatedAt \n ${matiere.id} | ${matiereName} | ${matiere.createdAt} | ${matiere.updatedAt}`);
+				return message.channel.send(`id | matiere | createdAt | updatedAt \n --------------------------------------- \n ${matiere.id} | ${matiereName} | ${matiere.createdAt} | ${matiere.updatedAt}`);
 			}
 			return message.reply(`Could not find tag: ${matiereName}`);
 		}
@@ -69,24 +77,30 @@ client.on('message', async message => {
 			//on crée une chaine de caractere avec les noms de la colonne. On les separe par virgule espace. si ya pas de resultat, la liste retourne no tag set
 			const idString = matiereList.map(t => t.id).join(', ') || 'No tags set.';
 			const matiereString = matiereList.map(t => t.matiere).join(', ') || 'No tags set.';
-			const createdAtString = matiereList.map(t => t.createdAt.getTime()).join(', ') || 'No tags set.';
-			const updatedAtString = matiereList.map(t => t.updatedAt.getTime()).join(', ') || 'No tags set.';
+			const createdAtString = matiereList.map(t => t.createdAt).join(', ') || 'No tags set.';
+			const updatedAtString = matiereList.map(t => t.updatedAt).join(', ') || 'No tags set.';
 			//on envoie la liste sur le channel
 			return message.channel.send(`List of id: ${idString} \n List of matiere: ${matiereString} \n List of creation: ${createdAtString} \n List of update: ${updatedAtString} \n `);
 		}
 		
 		else if (command === 'stop') {
-			//nomMatiere
+			// [zeta] !edittag ancienNom nveauNom
+			//amb stop nomInchangé
+			//met les arguments dans un tableau
+			//const splitArgs = commandArgs.split(' ');
+			//on prend le premier (le nom)
+			//const matiere = splitArgs.shift();
+			//console.log(matiere);
+			//on prend ce qui reste (description)
+			//const nouvMatiere = splitArgs.join(' ');
 			const matiereName = commandArgs;
-			//console.log(matiereName);
-			
-			const id = await Horodateur.max('id');
-			console.log(id);//11
+			console.log(matiereName);
+
 			// equivalent to: UPDATE tags (descrption) values (?) WHERE name='?';
-			const affectedRows = await Horodateur.update({ matiere: matiereName }, { where: { id: id } });
+			const affectedRows = await Horodateur.update({ matiere: matiereName }, { where: { matiere: matiereName } });
 			//si le update a reussi, on repond que le tag a bien ete edité et sinon que on a pa pu trouver le ligne a modifier
 			if (affectedRows > 0) {
-				const matiere = await Horodateur.findOne({ where: { id: id } });
+				const matiere = await Horodateur.findOne({ where: { matiere: matiereName } });
 				if (matiere) {
 					const timeDiff = timeDifference(matiere.updatedAt, matiere.createdAt);
 					
@@ -114,6 +128,32 @@ client.on('message', async message => {
 				return message.channel.send(` La différences entre ${matiere.updatedAt.getTime()} \n et ${matiere.createdAt.getTime()}\n est de ${formatTime}`);
 			}
 			return message.reply(`Could not find tag: ${matiereName}`);
+		}
+		else if (command === 'ajoute') {
+			try {
+				// equivalent to: INSERT INTO tags (name, description, username) values (?, ?, ?);
+				//on insert tagName dans la colonne name, tagDescription dans description et le nom de l'auteur du message dans username
+				const ligneTab = await Horodateur.create({
+					matiere: 'math',
+					createdAt: 'Sun Jun 20 2019 23:50:00 GMT+0200 (Paris, Madrid (heure d’été))',
+					updatedAt: 'Sun Jun 21 2019 00:10:00 GMT+0200 (Paris, Madrid (heure d’été))',
+				});
+				//le bot envoi un message pour dire que le tag a bien ete ajouté.
+				return message.reply(`la session bug minuit est finie`);
+			}
+			catch (e) {
+				return message.reply('Something went wrong with adding a tag.');
+			}
+		}
+		//je suis sensé choper le valeur en millisec dans la collection mais apparement ya des soucis avec la cache ou un truc du genre
+		//on senbalek de cette commande car cest pour la collection
+		else if (command === 'session') {
+			//amb session id
+			const id = parseInt(commandArgs);
+			//const matiere = await Horodateur.findOne({ where: { id: id } });
+			const sessionTime = formatTimeDiff(session.getTimeSess(id));
+			console.log(sessionTime);
+			return message.channel.send(` ${sessionTime}💰`);
 		}
 	}
 });
