@@ -61,32 +61,36 @@ client.on('message', async message => {
 		}
 		
 		else if (command === 'montretout') {
-			// [lambda] !showtags 
+			// [lambda] !showtags { attributes: ['matiere'] }
 			// equivalent to: SELECT name FROM tags;
 			//on cherche toutes les lignes de la colonne name. si on met rien on recup toute les colonnes je pense
-			const matiereList = await Horodateur.findAll({ attributes: ['matiere'] });
+			const matiereList = await Horodateur.findAll();
 			//on crée une chaine de caractere avec les noms de la colonne. On les separe par virgule espace. si ya pas de resultat, la liste retourne no tag set
+			const idString = matiereList.map(t => t.id).join(', ') || 'No tags set.';
 			const matiereString = matiereList.map(t => t.matiere).join(', ') || 'No tags set.';
+			const createdAtString = matiereList.map(t => t.createdAt).join(', ') || 'No tags set.';
+			const updatedAtString = matiereList.map(t => t.updatedAt).join(', ') || 'No tags set.';
 			//on envoie la liste sur le channel
-			return message.channel.send(`List of matieres: ${matiereString}`);
+			return message.channel.send(`List of id: ${idString} \n List of matiere: ${matiereString} \n List of creation: ${createdAtString} \n List of update: ${updatedAtString} \n `);
 		}
 		
 		else if (command === 'stop') {
 			// [zeta] !edittag ancienNom nveauNom
+			//amb stop nomInchangé
 			//met les arguments dans un tableau
 			const splitArgs = commandArgs.split(' ');
 			//on prend le premier (le nom)
-			const ancienneMatiere = splitArgs.shift();
+			const matiere = splitArgs.shift();
 			//on prend ce qui reste (description)
-			const nouvMatiere = splitArgs.join(' ');
+			//const nouvMatiere = splitArgs.join(' ');
 
 			// equivalent to: UPDATE tags (descrption) values (?) WHERE name='?';
-			const affectedRows = await Horodateur.update({ matiere: nouvMatiere }, { where: { matiere: ancienneMatiere } });
+			const affectedRows = await Horodateur.update({ matiere: matiere }, { where: { matiere: matiere } });
 			//si le update a reussi, on repond que le tag a bien ete edité et sinon que on a pa pu trouver le ligne a modifier
 			if (affectedRows > 0) {
-				return message.reply(`ancien: ${ancienneMatiere}. \n nouveau: ${nouvMatiere}.`);
+				return message.reply(`fin de la session: ${matiere}`);
 			}
-			return message.reply(`Could not find a tag with name ${ancienneMatiere}.`);
+			return message.reply(`Could not find a tag with name ${matiere}.`);
 		}
 		
 		else if (command === 'log') {
