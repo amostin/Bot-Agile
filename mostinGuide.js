@@ -104,16 +104,44 @@ client.on('message', async message => {
 		}
 		else if (command === 'log') {
 			// amb log = log total
-			// amb log bot = log que de cette matiere
-			const matiereName = commandArgs;//bot pour lexemple
+			// amb log bot = log totaux que de cette matiere
+			// amb log bot -s = voir les sessions pour une matiere
+			if(input[1]){ //si ya le -s 
+				const allLog = await Horodateur.findAll();
+				const createdAtString = allLog.map(t => t.createdAt.getTime()) || 'No tags set.';
+				const updatedAtString = allLog.map(t => t.updatedAt.getTime()) || 'No tags set.';
+				
+				createdAtString.forEach(function(element, index) {
+					//console.log(element+' = createdAtString['+index+']');
+					//console.log(formatTimeDiff(updatedAtString[index]-createdAtString[index]));
+					return message.channel.send(index + ', ' +formatTimeDiff(updatedAtString[index]-createdAtString[index]));
+				});
+			}
+			else if (input[0]){
+				const allLog = await Horodateur.findAll();
+				const createdAtString = allLog.map(t => t.createdAt.getTime()) || 'No tags set.';
+				const updatedAtString = allLog.map(t => t.updatedAt.getTime()) || 'No tags set.';
+				
+				var logSess = 0;
+				createdAtString.forEach(function(element, index) {
+					//console.log(element+' = createdAtString['+index+']');
+					//console.log(formatTimeDiff(updatedAtString[index]-createdAtString[index]));
+					logSess += updatedAtString[index]-createdAtString[index];
+					
+				});
+				return message.channel.send(formatTimeDiff(logSess));
+			}
+			var logTot = 0;
 			const allLog = await Horodateur.findAll();
 			const createdAtString = allLog.map(t => t.createdAt.getTime()) || 'No tags set.';
 			const updatedAtString = allLog.map(t => t.updatedAt.getTime()) || 'No tags set.';
-			console.log(updatedAtString);//un array avec toute les value msec
+			//console.log(updatedAtString);//un array avec toute les value msec
 			createdAtString.forEach(function(element, index) {
-				console.log(element+' = createdAtString['+index+']');
-				console.log(formatTimeDiff(updatedAtString[index]-createdAtString[index]));
+				//console.log(element+' = createdAtString['+index+']');
+				//console.log(formatTimeDiff(updatedAtString[index]-createdAtString[index]));
+				logTot += updatedAtString[index]-createdAtString[index];
 			});
+			return message.channel.send(formatTimeDiff(logTot));
 		}
 	}
 });
@@ -134,7 +162,7 @@ function formatTimeDiff(difference){
 
         var secondsDifference = Math.floor(difference/1000);
 
-     return timeDiff = 'difference = ' + daysDifference + ' day/s ' + hoursDifference + ' hour/s ' + minutesDifference + ' minute/s ' + secondsDifference + ' second/s ';
+     return timeDiff = daysDifference + ' jour ' + hoursDifference + ' heure ' + minutesDifference + ' minute ' + secondsDifference + ' seconde ';
 };
 
 Reflect.defineProperty(session, 'getTimeSess', {

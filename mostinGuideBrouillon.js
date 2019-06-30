@@ -190,3 +190,4 @@ Reflect.defineProperty(session, 'getTimeSess', {
 client.login('NTk0Njg2MzU0ODgxOTA0NjUz.XRgC7A.-Rsis3sj6wqzEqT3_j3mPpAm5Ws');
 
 // c'est un array qui contient nomTable associé a objet qui est la ligne (datatype) du coup le dernier objet contient les valeurs des colonnes.
+
