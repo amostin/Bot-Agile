@@ -7,6 +7,10 @@ const PREFIX = 'amb ';
 //collection qui va contenir l'id? et la difference des getTime de update et create
 const session = new Discord.Collection();
 
+
+
+
+
 client.once('ready', () => {
 	Horodateur.sync({ force: true })
 	console.log(`Logged in as ${client.user.tag}!`);
@@ -101,7 +105,7 @@ client.on('message', async message => {
 					
 					const formatTime = formatTimeDiff(timeDiff);
 					message.channel.send(` La différences entre ${matiere.updatedAt.getTime()} \n et ${matiere.createdAt.getTime()}\n est de ${formatTime}`);
-					return message.reply(`fin de la session: ${matiere}`);
+					return message.reply(`fin de la session: ${matiere.id}`);
 				}
 			}
 			return message.reply(`Could not find a tag with name ${matiere}.`);
@@ -137,6 +141,14 @@ client.on('message', async message => {
 				return message.reply('Something went wrong with adding a tag.');
 			}
 		}
+		else if (command === 'session') {
+			//amb session id
+			const id = parseInt(commandArgs);
+			//const matiere = await Horodateur.findOne({ where: { id: id } });
+			const sessionTime = formatTimeDiff(session.getTimeSess(id));
+			console.log(sessionTime);
+			return message.channel.send(` ${sessionTime}💰`);
+		}
 	}
 });
 
@@ -159,5 +171,14 @@ function formatTimeDiff(difference){
      return timeDiff = 'difference = ' + daysDifference + ' day/s ' + hoursDifference + ' hour/s ' + minutesDifference + ' minute/s ' + secondsDifference + ' second/s ';
 };
 
+Reflect.defineProperty(session, 'getTimeSess', {
+
+	value: function getTimeSess(id) {
+		//le user est l'id recup en param
+		const sessionTime = session.get(id);
+		//retourne lea diff entre debut et fin
+		return sessionTime;
+	}
+});
 
 client.login('NTk0Njg2MzU0ODgxOTA0NjUz.XRgC7A.-Rsis3sj6wqzEqT3_j3mPpAm5Ws');
