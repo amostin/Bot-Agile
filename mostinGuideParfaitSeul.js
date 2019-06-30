@@ -1,14 +1,39 @@
+//on crée les references au librairies
 const Discord = require('discord.js');
+const Sequelize = require('sequelize');
+
+//client est l'instance qui posséde donc les proprietes et methode de la Classe Discord
 const client = new Discord.Client();
-//import des tableaux de dbObjects 
-const { Horodateur } = require('./dbObjects');
+//le prefixe qui sert a parler au bot est !
 const PREFIX = 'amb ';
 
-client.once('ready', () => {
+//création de la connexion a la bdd
+const sequelize = new Sequelize('mostinSchool', 'mostinAdmin', 'mostinPswd', {
+	host: 'localhost',
+	dialect: 'sqlite',
+	logging: true,
+	storage: 'database.sqlite',
+});
+
+//création de la table
+const Horodateur = sequelize.define('horodateur', {
+		matiere: {
+			type: Sequelize.TEXT,
+		},
+	},{
+		timestamps: true,
+	}
+	);
+	
+	client.once('ready', () => {
+	// [gamma]
+	//on a crée une connexion puis un modèle pour avoir une idee de a quoi vont ressembler nos données et maintenant tout sera créé que quand on est synch.
+	//ici on ajoute force true pour quil recree la bdd a chaque redemarrage pour tester
 	Horodateur.sync({ force: true })
 	console.log(`Logged in as ${client.user.tag}!`);
 });
 
+//ici on liste les actions disponibles lors de la reception d'un msg sur un channel
 client.on('message', async message => {
 	//si le message commence avec le prefixe on execute ce qui suit et sinon on fait rien
 	if (message.content.startsWith(PREFIX)) {
@@ -108,8 +133,8 @@ client.on('message', async message => {
 				//on insert tagName dans la colonne name, tagDescription dans description et le nom de l'auteur du message dans username
 				const ligneTab = await Horodateur.create({
 					matiere: 'math',
-					createdAt: 'Sun Jun 20 2019 23:50:00 GMT+0200 (Paris, Madrid (heure d’été))',
-					updatedAt: 'Sun Jun 21 2019 00:10:00 GMT+0200 (Paris, Madrid (heure d’été))',
+					createdAt: 'Sun Jun 29 2019 23:50:00 GMT+0200 (Paris, Madrid (heure d’été))',
+					updatedAt: 'Sun Jun 30 2019 00:10:00 GMT+0200 (Paris, Madrid (heure d’été))',
 				});
 				//le bot envoi un message pour dire que le tag a bien ete ajouté.
 				return message.reply(`la session bug minuit est finie`);
@@ -137,6 +162,5 @@ function timeDifference(date1,date2) {
 
      return timeDiff = 'difference = ' + daysDifference + ' day/s ' + hoursDifference + ' hour/s ' + minutesDifference + ' minute/s ' + secondsDifference + ' second/s ';
 }
-
 
 client.login('NTk0Njg2MzU0ODgxOTA0NjUz.XRgC7A.-Rsis3sj6wqzEqT3_j3mPpAm5Ws');
