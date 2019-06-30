@@ -49,31 +49,6 @@ client.on('message', async message => {
 				return message.reply('Something went wrong with adding a tag.');
 			}
 		}
-		else if (command === 'montre') {
-			// [theta]
-			const matiereName = commandArgs;
-
-			// equivalent to: SELECT * FROM tags WHERE name = 'tagName' LIMIT 1;
-			const matiere = await Horodateur.findOne({ where: { matiere: matiereName } });
-			if (matiere) {
-				return message.channel.send(`id | matiere | createdAt | updatedAt \n ${matiere.id} | ${matiereName} | ${matiere.createdAt} | ${matiere.updatedAt}`);
-			}
-			return message.reply(`Could not find tag: ${matiereName}`);
-		}
-		
-		else if (command === 'montretout') {
-			// [lambda] !showtags { attributes: ['matiere'] }
-			// equivalent to: SELECT name FROM tags;
-			//on cherche toutes les lignes de la colonne name. si on met rien on recup toute les colonnes je pense
-			const matiereList = await Horodateur.findAll();
-			//on crée une chaine de caractere avec les noms de la colonne. On les separe par virgule espace. si ya pas de resultat, la liste retourne no tag set
-			const idString = matiereList.map(t => t.id).join(', ') || 'No tags set.';
-			const matiereString = matiereList.map(t => t.matiere).join(', ') || 'No tags set.';
-			const createdAtString = matiereList.map(t => t.createdAt.getTime()).join(', ') || 'No tags set.';
-			const updatedAtString = matiereList.map(t => t.updatedAt.getTime()).join(', ') || 'No tags set.';
-			//on envoie la liste sur le channel
-			return message.channel.send(`List of id: ${idString} \n List of matiere: ${matiereString} \n List of creation: ${createdAtString} \n List of update: ${updatedAtString} \n `);
-		}
 		
 		else if (command === 'stop') {
 			//nomMatiere
@@ -101,19 +76,44 @@ client.on('message', async message => {
 			return message.reply(`Could not find a tag with name ${matiere}.`);
 		}
 		
-		else if (command === 'log') {
-			// amb log math
-			//je dois recup une matiere et retourner update - create
+		else if (command === 'montre') {
+			// [theta]
 			const matiereName = commandArgs;
 
 			// equivalent to: SELECT * FROM tags WHERE name = 'tagName' LIMIT 1;
 			const matiere = await Horodateur.findOne({ where: { matiere: matiereName } });
 			if (matiere) {
-				const timeDiff = timeDifference(matiere.updatedAt, matiere.createdAt);
-				const formatTime = formatTimeDiff(timeDiff);
-				return message.channel.send(` La différences entre ${matiere.updatedAt.getTime()} \n et ${matiere.createdAt.getTime()}\n est de ${formatTime}`);
+				return message.channel.send(`id | matiere | createdAt | updatedAt \n ${matiere.id} | ${matiereName} | ${matiere.createdAt} | ${matiere.updatedAt}`);
 			}
 			return message.reply(`Could not find tag: ${matiereName}`);
+		}
+		
+		else if (command === 'montretout') {
+			// [lambda] !showtags { attributes: ['matiere'] }
+			// equivalent to: SELECT name FROM tags;
+			//on cherche toutes les lignes de la colonne name. si on met rien on recup toute les colonnes je pense
+			const matiereList = await Horodateur.findAll();
+			//on crée une chaine de caractere avec les noms de la colonne. On les separe par virgule espace. si ya pas de resultat, la liste retourne no tag set
+			const idString = matiereList.map(t => t.id).join(', ') || 'No tags set.';
+			const matiereString = matiereList.map(t => t.matiere).join(', ') || 'No tags set.';
+			//t est une valeur du array et on recup les element qui ont la valeur create puis on fomre une string avec virgule
+			const createdAtString = matiereList.map(t => t.createdAt.getTime()).join(', ') || 'No tags set.';
+			const updatedAtString = matiereList.map(t => t.updatedAt.getTime()).join(', ') || 'No tags set.';
+			//on envoie la liste sur le channel
+			return message.channel.send(`List of id: ${idString} \n List of matiere: ${matiereString} \n List of creation: ${createdAtString} \n List of update: ${updatedAtString} \n `);
+		}
+		else if (command === 'log') {
+			// amb log = log total
+			// amb log bot = log que de cette matiere
+			const matiereName = commandArgs;//bot pour lexemple
+			const allLog = await Horodateur.findAll();
+			const createdAtString = allLog.map(t => t.createdAt.getTime()) || 'No tags set.';
+			const updatedAtString = allLog.map(t => t.updatedAt.getTime()) || 'No tags set.';
+			console.log(updatedAtString);//un array avec toute les value msec
+			createdAtString.forEach(function(element, index) {
+				console.log(element+' = createdAtString['+index+']');
+				console.log(formatTimeDiff(updatedAtString[index]-createdAtString[index]));
+			});
 		}
 	}
 });
