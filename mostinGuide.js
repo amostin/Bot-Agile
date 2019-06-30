@@ -95,8 +95,12 @@ client.on('message', async message => {
 				const matiere = await Horodateur.findOne({ where: { matiere: matiereName } });
 				if (matiere) {
 					const timeDiff = timeDifference(matiere.updatedAt, matiere.createdAt);
+					
+					//ajout de la difference de la session avec id de fin
+					session.set(matiere.id, timeDiff);
+					
 					const formatTime = formatTimeDiff(timeDiff);
-					 message.channel.send(` La différences entre ${matiere.updatedAt.getTime()} \n et ${matiere.createdAt.getTime()}\n est de ${formatTime}`);
+					message.channel.send(` La différences entre ${matiere.updatedAt.getTime()} \n et ${matiere.createdAt.getTime()}\n est de ${formatTime}`);
 					return message.reply(`fin de la session: ${matiere}`);
 				}
 			}
