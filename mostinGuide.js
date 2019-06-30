@@ -107,7 +107,11 @@ client.on('message', async message => {
 			// amb log bot = log totaux que de cette matiere
 			// amb log bot -s = voir les sessions pour une matiere
 			if(input[1]){ //si ya le -s 
-				const allLog = await Horodateur.findAll();
+				const allLog = await Horodateur.findAll({
+													  where: {
+														matiere: input[0]
+													  }
+													});
 				const createdAtString = allLog.map(t => t.createdAt.getTime()) || 'No tags set.';
 				const updatedAtString = allLog.map(t => t.updatedAt.getTime()) || 'No tags set.';
 				
@@ -118,9 +122,13 @@ client.on('message', async message => {
 				});
 			}
 			else if (input[0]){
-				const allLog = await Horodateur.findAll();
-				const createdAtString = allLog.map(t => t.createdAt.getTime()) || 'No tags set.';
-				const updatedAtString = allLog.map(t => t.updatedAt.getTime()) || 'No tags set.';
+				const allLogMat = await Horodateur.findAll({
+													  where: {
+														matiere: input[0]
+													  }
+													});
+				const createdAtString = allLogMat.map(t => t.createdAt.getTime()) || 'No tags set.';
+				const updatedAtString = allLogMat.map(t => t.updatedAt.getTime()) || 'No tags set.';
 				
 				var logSess = 0;
 				createdAtString.forEach(function(element, index) {
