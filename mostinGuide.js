@@ -4,6 +4,9 @@ const client = new Discord.Client();
 const { Horodateur } = require('./dbObjects');
 const PREFIX = 'amb ';
 
+//collection qui va contenir l'id? et la difference des getTime de update et create
+const session = new Discord.Collection();
+
 client.once('ready', () => {
 	Horodateur.sync({ force: true })
 	console.log(`Logged in as ${client.user.tag}!`);
@@ -83,12 +86,19 @@ client.on('message', async message => {
 			const matiere = splitArgs.shift();
 			//on prend ce qui reste (description)
 			//const nouvMatiere = splitArgs.join(' ');
+			const matiereName = commandArgs;
 
 			// equivalent to: UPDATE tags (descrption) values (?) WHERE name='?';
 			const affectedRows = await Horodateur.update({ matiere: matiere }, { where: { matiere: matiere } });
 			//si le update a reussi, on repond que le tag a bien ete edité et sinon que on a pa pu trouver le ligne a modifier
 			if (affectedRows > 0) {
-				return message.reply(`fin de la session: ${matiere}`);
+				const matiere = await Horodateur.findOne({ where: { matiere: matiereName } });
+				if (matiere) {
+					const timeDiff = timeDifference(matiere.updatedAt, matiere.createdAt);
+					const formatTime = formatTimeDiff(timeDiff);
+					 message.channel.send(` La différences entre ${matiere.updatedAt.getTime()} \n et ${matiere.createdAt.getTime()}\n est de ${formatTime}`);
+					return message.reply(`fin de la session: ${matiere}`);
+				}
 			}
 			return message.reply(`Could not find a tag with name ${matiere}.`);
 		}
@@ -102,7 +112,8 @@ client.on('message', async message => {
 			const matiere = await Horodateur.findOne({ where: { matiere: matiereName } });
 			if (matiere) {
 				const timeDiff = timeDifference(matiere.updatedAt, matiere.createdAt);
-				return message.channel.send(` La différences entre ${matiere.updatedAt.getTime()} \n et ${matiere.createdAt.getTime()}\n est de ${timeDiff}`);
+				const formatTimeDiff = formatTimeDiff(timeDiff);
+				return message.channel.send(` La différences entre ${matiere.updatedAt.getTime()} \n et ${matiere.createdAt.getTime()}\n est de ${formatTimeDiff}`);
 			}
 			return message.reply(`Could not find tag: ${matiereName}`);
 		}
@@ -126,9 +137,11 @@ client.on('message', async message => {
 });
 
 function timeDifference(date1,date2) {
-        var difference = date1.getTime() - date2.getTime();
+        return date1.getTime() - date2.getTime();
+}
 
-        var daysDifference = Math.floor(difference/1000/60/60/24);
+function formatTimeDiff(difference){
+	var daysDifference = Math.floor(difference/1000/60/60/24);
         difference -= daysDifference*1000*60*60*24
 
        var hoursDifference = Math.floor(difference/1000/60/60);
@@ -140,7 +153,7 @@ function timeDifference(date1,date2) {
         var secondsDifference = Math.floor(difference/1000);
 
      return timeDiff = 'difference = ' + daysDifference + ' day/s ' + hoursDifference + ' hour/s ' + minutesDifference + ' minute/s ' + secondsDifference + ' second/s ';
-}
+};
 
 
 client.login('NTk0Njg2MzU0ODgxOTA0NjUz.XRgC7A.-Rsis3sj6wqzEqT3_j3mPpAm5Ws');
