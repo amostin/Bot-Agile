@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const fs = require("fs");
 const client = new Discord.Client();
 //import des tableaux de dbObjects 
 const { Horodateur } = require('./dbObjects');
@@ -6,10 +7,6 @@ const PREFIX = 'amb ';
 
 //collection qui va contenir l'id? et la difference des getTime de update et create
 const session = new Discord.Collection();
-
-
-
-
 
 client.once('ready', () => {
 	Horodateur.sync({ 
@@ -92,13 +89,40 @@ client.on('message', async message => {
 			// [lambda] !showtags { attributes: ['matiere'] }
 			// equivalent to: SELECT name FROM tags;
 			//on cherche toutes les lignes de la colonne name. si on met rien on recup toute les colonnes je pense
+			//matiereList est un objet contenant des clé et des valeur
 			const matiereList = await Horodateur.findAll();
 			//on crée une chaine de caractere avec les noms de la colonne. On les separe par virgule espace. si ya pas de resultat, la liste retourne no tag set
+			//map sert a appliquer une fct sur chaque valeur de clé
 			const idString = matiereList.map(t => t.id).join(', ') || 'No tags set.';
 			const matiereString = matiereList.map(t => t.matiere).join(', ') || 'No tags set.';
 			//t est une valeur du array et on recup les element qui ont la valeur create puis on fomre une string avec virgule
 			const createdAtString = matiereList.map(t => t.createdAt.getTime()).join(', ') || 'No tags set.';
 			const updatedAtString = matiereList.map(t => t.updatedAt.getTime()).join(', ') || 'No tags set.';
+			
+			
+			const idArray = matiereList.map(t => t.id);
+			const matiereArray = matiereList.map(t => t.matiere);
+			const createdAtArray = matiereList.map(t => t.createdAt.getTime());
+			const updatedAtArray = matiereList.map(t => t.updatedAt.getTime());
+			
+			const attributLog = 'ID                       MATIERE                  CREATEDAT                UPDATEAT                 \n';
+			var ligneLog = ""; //format25(idArray[0]) + format25(matiereArray[0]) + format25(createdAtArray[0]) + format25(updatedAtArray[0] + '\n');
+			for ( let i in idArray){
+				//var longCellule = 'id: '+format25(idArray[i]).length + 'mat: '+ format25(matiereArray[i]).length+'creat:'+format25(createdAtArray[i]).length+'updat:'+format25(updatedAtArray[i]).length+'\n';
+				//console.log(longCellule);
+				ligneLog += format25(idArray[i]) + format25(matiereArray[i]) + format25(createdAtArray[i]) + format25(updatedAtArray[i] + '\n');
+			}
+			//console.log(longCellule);
+
+			fs.writeFileSync("./debutFinSessionLog.txt", attributLog);//,   function (err) {
+																		  //if (err) throw err;
+																			//console.log('todo list maj!');
+																		//});
+			fs.appendFile("./debutFinSessionLog.txt", ligneLog,   function (err) {
+																		  if (err) throw err;
+																			console.log('todo list maj!');
+																		});
+			
 			//on envoie la liste sur le channel
 			return message.channel.send(`List of id: ${idString} \n List of matiere: ${matiereString} \n List of creation: ${createdAtString} \n List of update: ${updatedAtString} \n `);
 		}
@@ -139,6 +163,7 @@ client.on('message', async message => {
 				});
 				return message.channel.send(formatTimeDiff(logSess));
 			}
+			else if (!input[0]){
 			var logTot = 0;
 			const allLog = await Horodateur.findAll();
 			const createdAtString = allLog.map(t => t.createdAt.getTime()) || 'No tags set.';
@@ -150,9 +175,34 @@ client.on('message', async message => {
 				logTot += updatedAtString[index]-createdAtString[index];
 			});
 			return message.channel.send(formatTimeDiff(logTot));
+			}
 		}
 	}
 });
+/*
+function testPreEspace(elementArray){
+	const letterArray = elementArray.split();
+	for (let i in letterArray){
+		if(letterArray[i] === ' ') letterArray.shift();
+		else return letterArray.toSting();
+	}
+}
+*/
+function format25(elementArray){
+	//console.log(elementArray.toString().length);
+	const longueurElement = elementArray.toString().length;
+	if(longueurElement < 25){
+		const nbreEspaceManquant = 25 - longueurElement;
+		var element25 = elementArray;
+		for(let i = 0; i < nbreEspaceManquant; i++){
+			element25 += ' ';
+		}
+		return element25;
+	}
+	else{
+			return elementArray;
+	}
+}
 
 function timeDifference(date1,date2) {
         return date1.getTime() - date2.getTime();
