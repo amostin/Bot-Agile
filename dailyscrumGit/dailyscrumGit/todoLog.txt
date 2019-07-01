@@ -1,0 +1,12 @@
+
+DailyScrumBot: quil pose les 3 questions
+Stocke les reponses
+Possibilité de recup la liste de chose a faire pour ajd (pe hier et+)
+Possibilité de "cocher" ce qui est fait
+Qu’est-ce qui me bloque <?>
+
+DailyScrumBot: quil pose les 3 questions
+Stocke les reponses
+Possibilité de recup la liste de chose a faire pour ajd (pe hier et+)
+Possibilité de "cocher" ce qui est fait
+Qu’est-ce qui me bloque <?>
