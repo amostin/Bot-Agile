@@ -20,7 +20,9 @@ client.on('message', async message => {
 		}
 		
 		else if (command === 'rapport'){
-			message.reply(commandArgs);
+			//message.reply(commandArgs);
+			const rapportTab = message.content.slice(PREFIX.length).split('?');
+			message.reply('longueur: '+rapportTab.length);
 		}
 	}
 });
