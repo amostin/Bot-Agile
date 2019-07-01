@@ -27,26 +27,29 @@ client.on('message', async message => {
 			//message.reply(commandArgs);
 			const rapportTab = message.content.slice(PREFIX.length).split('?');
 			
-			let rapportTotal = "";
+			let date = new Date();
+			let rapportTotal = `\n\n Le ${parseJour(date.getDay())} ${date.getDate()} ${parseMois(date.getMonth())} ${date.getFullYear()}`;
 			for(let i = 0; i<rapportTab.length; i++){
 				rapportTotal += rapportTab[i] +'<FIN PARTIE DU RAPPORT>';
 			}
-			fs.appendFile("./rapportLog.txt", '\n\n' + rapportTotal,  function (err) {
+			fs.appendFile("./rapportLog.txt", rapportTotal,  function (err) {
 																  if (err) throw err;
 																	
 																	console.log('rapport loggé!');
 																});
 			
 			let todoArray = rapportTab[2].split('\r\n');
-			//message.reply(todoArray[0]);
-			let todoList = "";
+			let todoList = `\n\n Le ${parseJour(date.getDay())} ${date.getDate()} ${parseMois(date.getMonth())} ${date.getFullYear()}`;
+			//.getDate().getMonth().getFullYear()
 			for(let i = 0; i<todoArray.length; i++){
 				todoList += todoArray[i] +'<?>';
 			}
-			fs.appendFile("./todoLog.txt", '\n' + todoList,  function (err) {
+			fs.appendFile("./todoLog.txt", todoList,  function (err) {
 														  if (err) throw err;
 															console.log('todo list maj!');
 														});
+														
+														
 			message.reply(`rapport loggé: ${rapportTotal}\n------------------------------todo list mise à jour: ${todoList}`);
 			//message.reply(`longueur: ${rapportTab.length}\n 1er elem: ${rapportTab[0]}\n 2eme elem: ${rapportTab[1]}\n 3eme elem: ${rapportTab[2]}\n 4eme elem: ${rapportTab[3]}\n`);
 		}
@@ -69,6 +72,54 @@ client.on('message', async message => {
 		}
 	}
 });
+
+function parseJour(indexDuJour){
+		switch (indexDuJour){
+			case 1:
+		return 'Lundi';
+			case 2:
+		return 'Mardi';
+			case 3:
+		return 'Mercredi';
+			case 4:
+		return 'Jeudi';
+			case 5:
+		return 'Vendredi';
+			case 6:
+		return 'Samedi';
+			case 7:
+		return 'Dimanche';
+	}
+}
+
+function parseMois(indexDuMois){
+		switch (indexDuMois){
+			case 0:
+		return 'Janvier';
+			case 1:
+		return 'Février';
+			case 2:
+		return 'Mars';
+			case 3:
+		return 'Avril';
+			case 4:
+		return 'Mai';
+			case 5:
+		return 'Juin';
+			case 6:
+		return 'Juillet';
+			case 7:
+		return 'Aout';
+			case 8:
+		return 'Septembre';
+			case 9:
+		return 'Octobre';
+			case 10:
+		return 'Novembre';
+			case 11:
+		return 'Décembre';
+	}
+}
 
 function formatTimeDiff(difference){
 	var daysDifference = Math.floor(difference/1000/60/60/24);
