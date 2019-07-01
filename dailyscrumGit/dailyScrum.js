@@ -1,4 +1,6 @@
 const Discord = require('discord.js');
+//utile pour lire et ecrire fichier en local
+const fs = require("fs");
 const client = new Discord.Client();
 const { Daily_scrum } = require('./dbObjects');
 const PREFIX = 'amb ';
@@ -20,8 +22,17 @@ client.on('message', async message => {
 		}
 		
 		else if (command === 'rapport'){
+			//pas ecrire ce que le bot ecrit
+			if(message.author.bot) return;
 			//message.reply(commandArgs);
 			const rapportTab = message.content.slice(PREFIX.length).split('?');
+			
+			let string = "";
+			for(let i = 0; i<rapportTab.length; i++){
+				string += rapportTab[i] +'<FIN PARTIE DU RAPPORT>';
+			}
+			fs.writeFileSync("./rapportLog.txt", string);
+			
 			message.reply(`longueur: ${rapportTab.length}\n 1er elem: ${rapportTab[0]}\n 2eme elem: ${rapportTab[1]}\n 3eme elem: ${rapportTab[2]}\n 4eme elem: ${rapportTab[3]}\n`);
 		}
 		
@@ -31,6 +42,15 @@ client.on('message', async message => {
 			.then((msg) => { // Resolve promise
 				msg.edit("Ping: " + formatTimeDiff(msg.createdTimestamp - Date.now())) // Edits message with current timestamp minus timestamp of message
 			});
+		}
+		else if (command === 'ouestu') {
+			let names = client.guilds.map((u) => { return u.name });// ["Some name", "Other one"];
+			let string = "";
+			for(let i = 0; i<names.length; i++){
+				string += names[i] +'\n';
+			}
+			fs.writeFileSync("./test.txt", 'ok regarde: '+string);
+			message.reply(string);
 		}
 	}
 });
