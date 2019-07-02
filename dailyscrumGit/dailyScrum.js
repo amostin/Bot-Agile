@@ -30,7 +30,7 @@ client.on('message', async message => {
 			let date = new Date();
 			let rapportTotal = `\n\n Le ${parseJour(date.getDay())} ${date.getDate()} ${parseMois(date.getMonth())} ${date.getFullYear()} \n`;
 			for(let i = 0; i<rapportTab.length; i++){
-				rapportTotal += rapportTab[i] +'<FIN PARTIE DU RAPPORT>';
+				rapportTotal += rapportTab[i] + '?'; // +'<FIN PARTIE DU RAPPORT>';
 			}
 			fs.appendFile("./rapportLog.txt", rapportTotal,  function (err) {
 																  if (err) throw err;
@@ -42,8 +42,9 @@ client.on('message', async message => {
 			let todoList = `\n\n Le ${parseJour(date.getDay())} ${date.getDate()} ${parseMois(date.getMonth())} ${date.getFullYear()}`;
 			//.getDate().getMonth().getFullYear()
 			for(let i = 0; i<todoArray.length; i++){
-				todoList += todoArray[i] +'<?>';
+				todoList += todoArray[i]; //+'<?>';
 			}
+			todoList = todoList.substring();
 			fs.appendFile("./todoLog.txt", todoList,  function (err) {
 														  if (err) throw err;
 															console.log('todo list maj!');
@@ -52,6 +53,27 @@ client.on('message', async message => {
 														
 			message.reply(`rapport loggé: ${rapportTotal}\n------------------------------todo list mise à jour: ${todoList}`);
 			//message.reply(`longueur: ${rapportTab.length}\n 1er elem: ${rapportTab[0]}\n 2eme elem: ${rapportTab[1]}\n 3eme elem: ${rapportTab[2]}\n 4eme elem: ${rapportTab[3]}\n`);
+		}
+		
+		else if (command === "todolist"){
+			//si on met pas utf8 on recoit un buffer brut alors qu'on veut une string
+			fs.readFile("./todoLog.txt", 'utf8', function read(err, data) {
+													if (err) {
+														throw err;
+													}
+				message.reply(data.substring(2, 197));
+			});
+		}
+		
+		else if (command === "fini"){
+			fs.readFile("./todoLog.txt", 'utf8', function read(err, data) {
+												if (err) {
+													throw err;
+												}
+			data = data.substring(2, 197);
+			let dataArray = data.split('\r\n');
+			return message.reply(commandArgs + ' 👍👍👍👍👍');
+			});
 		}
 		
 		
