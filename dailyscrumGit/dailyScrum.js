@@ -5,7 +5,7 @@ const client = new Discord.Client();
 const { Daily_scrum } = require('./dbObjects');
 const { Horodateur } = require('../mostinGuide/dbObjects');
 const PREFIX = 'amb ';
-var statLog = new Object();
+var stat = new Object();
 
 client.once('ready', () => {
 	Horodateur.sync({ 
@@ -105,8 +105,11 @@ client.on('message', async message => {
 							console.log(contentUtile.length);
 							console.log(commandArgs*2);
 							if((commandArgs*2) === (contentUtile.length-3)){
-								message.reply('BRAVO ! TU AS FINI TES TACHES POUR AUJOURDHUI !!');
-								
+								message.reply('BRAVO ! TU AS FINI TES TACHES POUR AUJOURDHUI !!\n Tu vas recevoir un badge avec le jour où ça à été fait pour qu\'on puisse voir si t\'es endurant');
+								let date = new Date();
+								stat.finTodoJournalier = date.toString().substring(0, 25);
+								console.log(stat);
+								message.channel.send('amb build '+ stat.finTodoJournalier);
 							}
 			});
 		}
@@ -121,9 +124,10 @@ client.on('message', async message => {
 		else if (command === "xD") {
 			let statLogTemp = message;
 			console.log(statLogTemp);
-			//le premier elem du tabLog sera tj le log global
-			statLog.global = statLogTemp.content.substring(7);
-			console.log(statLog.global);
+			//le premier elem du tabLog sera tj le log logGlobal
+			stat.logGlobal = statLogTemp.content.substring(7, 44);
+			console.log(stat);
+			message.channel.send('amb myspace');
 		}
 		
 		
@@ -138,18 +142,19 @@ client.on('message', async message => {
 			.setColor('#0099ff')
 			.setTitle('AMBROISE MOSTIN')
 			//.setURL('https://discord.js.org/')
-			.setAuthor('Je suis l\'auteur de ce paradis', 'https://i.imgur.com/wSTFkRM.png', 'https://discord.js.org')
+			//.setAuthor('Je suis l\'auteur de ce paradis', 'https://i.imgur.com/wSTFkRM.png', 'https://discord.js.org')
 			.setDescription('Nous voici face a ton espace de satisfaction. \n Ici tu as accès à toute les stats dispo pour prendre conscience du chemin parcouru.')
-			.setThumbnail('https://i.imgur.com/wSTFkRM.png')
-			.addField('Temps de connexion total: ', `${statLog.global}`)
-			.addBlankField()
-			.addField('Temps de connexion total par session', 'je vais essayer de recup la valeur du fichier log', true)
+			//.setThumbnail('https://i.imgur.com/wSTFkRM.png')
+			.addField('Temps de connexion total: ', `${stat.logGlobal}`)
+			//.addBlankField()
+			.addField('moment où tu as réussis à finir tes taches quotidiennes', `${stat.finTodoJournalier}`, true)
 			.addField('Temps de connexion total par session', 'Some value here', true)
 			.addField('Inline field title', 'Some value here', true)
 			.setImage('https://i.imgur.com/wSTFkRM.png')
 			.setTimestamp()
 			.setFooter('Dernière connexion: ', 'https://i.imgur.com/wSTFkRM.png');
 		message.channel.send(exampleEmbed);
+		console.log(stat);
 		}
 
 		
