@@ -10,3 +10,4 @@ const sequelize = new Sequelize('agileSchool', 'mostinAdmin', 'mostinPswd', {
 const Daily_scrum = sequelize.import('models/daily_scrum');
 
 module.exports = { Daily_scrum };
+

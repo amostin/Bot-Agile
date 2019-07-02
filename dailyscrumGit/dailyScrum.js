@@ -3,10 +3,12 @@ const Discord = require('discord.js');
 const fs = require("fs");
 const client = new Discord.Client();
 const { Daily_scrum } = require('./dbObjects');
+const { Horodateur } = require('../mostinGuide/dbObjects');
 const PREFIX = 'amb ';
+var statLog = [];
 
 client.once('ready', () => {
-	Daily_scrum.sync({ 
+	Horodateur.sync({ 
 		//force: true 
 	})
 	console.log(`Logged in as ${client.user.tag}!`);
@@ -61,7 +63,23 @@ client.on('message', async message => {
 													if (err) {
 														throw err;
 													}
-				message.channel.send('amb pin ' + data.substring(2, 197));
+											const content = data;
+				//console.log(data);
+				//message.reply(content);
+				const contentUtile = content.substring(2, 197).split('\n');
+				const contentIndesirableDebut = contentUtile.splice(0, 2);
+				contentUtile.pop();
+				contentUtile.pop();
+				//var contentIndesirableFin = contentUtile.splice(((contentIndesirableDebut.length)-2), 2);
+				//contentIndesirableFin = contentIndesirableDebut.shift();
+				console.log(contentUtile);
+				let contentUtileSansFut = "";
+				for(let i = 0; i<contentUtile.length; i++){
+					//if(i>= contentUtile.length) break;
+					contentUtileSansFut += contentUtile[i] + '\n';
+				}
+				
+				message.channel.send(`amb pin \n ${contentUtileSansFut}`);
 			});
 		}
 		
@@ -83,50 +101,53 @@ client.on('message', async message => {
 							
 							//let longueurInutile = contentUtile.toString().length;
 							console.log(contentUtile);
-							message.channel.send('amb pin ' + contentUtile[commandArgs*2]);
+							message.channel.send('amb pin 👍 ' + contentUtile[commandArgs*2]);
 			});
 		}
 		
 		else if(command === 'pin'){
 			//console.log('yaas');
+			//commandInutile = message.content.slice(PREFIX.length+command.length);
+			//console.log(commandInutile);
 			message.pin();
 		}
 		
+		else if (command === "xD") {
+			let statLogTemp = message;
+			console.log(statLogTemp);
+			statLog.push(statLogTemp.content.substring(7));
+			console.log(statLog[0]);
+		}
+		
+		
+		else if (command === "myspace") {
+			
+//message.reply('je ne trouve rien patron...')};
+			
+			
+			
+			
+			const exampleEmbed = new Discord.RichEmbed()
+			.setColor('#0099ff')
+			.setTitle('AMBROISE MOSTIN')
+			//.setURL('https://discord.js.org/')
+			.setAuthor('Je suis l\'auteur de ce paradis', 'https://i.imgur.com/wSTFkRM.png', 'https://discord.js.org')
+			.setDescription('Nous voici face a ton espace de satisfaction. \n Ici tu as accès à toute les stats dispo pour prendre conscience du chemin parcouru.')
+			.setThumbnail('https://i.imgur.com/wSTFkRM.png')
+			.addField('Temps de connexion total: ', `${statLog[0]}`)
+			.addBlankField()
+			.addField('Temps de connexion total par session', 'je vais essayer de recup la valeur du fichier log', true)
+			.addField('Temps de connexion total par session', 'Some value here', true)
+			.addField('Inline field title', 'Some value here', true)
+			.setImage('https://i.imgur.com/wSTFkRM.png')
+			.setTimestamp()
+			.setFooter('Dernière connexion: ', 'https://i.imgur.com/wSTFkRM.png');
+		message.channel.send(exampleEmbed);
+		}
 
 		
 		
-		else if(command === "ping"){ // Check if message is "!ping"
-			message.channel.send("Pinging ...") // Placeholder for pinging ... 
-			.then((msg) => { // Resolve promise
-				msg.edit("Ping: " + formatTimeDiff(msg.createdTimestamp - Date.now())) // Edits message with current timestamp minus timestamp of message
-			});
-		}
-		else if (command === 'ouestu') {
-			let names = client.guilds.map((u) => { return u.name });// ["Some name", "Other one"];
-			let string = "";
-			for(let i = 0; i<names.length; i++){
-				string += names[i] +'\n';
-			}
-			fs.open('./test.txt', 'w', function (err, fd) {
-										if (err) throw err;
-										console.log('test.txt ouvert!');
-					
-										let modif = 'Possibilité de "cocher" ce qui est fait  👍👍👍👍👍';
-										fs.write(fd, modif, function (err, written, string) {
-																							if (err) {
-																								throw err;
-																							}
-													
-										});
-										fs.close(fd, (err) => {
-														if (err) throw err;
-														console.log('test.txt fermé');
-													});
-			});			
 
-
-			message.reply(string);
-		}
 	}
 });
 
@@ -251,4 +272,37 @@ client.login('NTk0OTk5MDgxMDA5NDE0MTUw.XRkmHg.aa8u5sd1QhBP693Ln5r-Lf_t9ck');
 				}
 			  )
 			  .catch(console.error);
+			  
+			  
+			  
+		else if(command === "ping"){ // Check if message is "!ping"
+			message.channel.send("Pinging ...") // Placeholder for pinging ... 
+			.then((msg) => { // Resolve promise
+				msg.edit("Ping: " + formatTimeDiff(msg.createdTimestamp - Date.now())) // Edits message with current timestamp minus timestamp of message
+			});
+		}
+		else if (command === 'ouestu') {
+			let names = client.guilds.map((u) => { return u.name });// ["Some name", "Other one"];
+			let string = "";
+			for(let i = 0; i<names.length; i++){
+				string += names[i] +'\n';
+			}
+			fs.open('./test.txt', 'w', function (err, fd) {
+										if (err) throw err;
+										console.log('test.txt ouvert!');
+					
+										let modif = 'Possibilité de "cocher" ce qui est fait  👍👍👍👍👍';
+										fs.write(fd, modif, function (err, written, string) {
+																							if (err) {
+																								throw err;
+																							}
+													
+										});
+										fs.close(fd, (err) => {
+														if (err) throw err;
+														console.log('test.txt fermé');
+													});
+			});			
+			message.reply(string);
+		}
 */
