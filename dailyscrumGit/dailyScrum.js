@@ -70,9 +70,10 @@ client.on('message', async message => {
 												if (err) {
 													throw err;
 												}
-			data = data.substring(2, 197);
-			let dataArray = data.split('\r\n');
-			return message.reply(commandArgs + ' 👍👍👍👍👍');
+			data = data.substring(2, 197).split('\n');
+			//let dataArray = data.split(' ');
+			//let dataChecked = dataArray.map(() => );
+			return message.reply(data[1] + ' 👍👍👍👍👍');
 			});
 		}
 		
