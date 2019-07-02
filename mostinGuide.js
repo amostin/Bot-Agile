@@ -12,17 +12,28 @@ client.once('ready', () => {
 	Horodateur.sync({ 
 		//force: true 
 	})
-//	const ligneArray = Horodateur.create({
-//					matiere: 'logBot',
-//				});
+	/*
+	const ligneArray = Horodateur.create({
+					matiere: 'logBot',
+				});
+				*/
 	console.log(`Logged in as ${client.user.tag}!`);
 });
-
-client.on('disconnect', () => {
-	const matiereList = Horodateur.findAll();
+/*
+client.on('disconnect', async event => {
+	console.log(event.code);
 	
+			const idTacheBot = Horodateur.max('id');
+			const maxId = Horodateur.findOne({ where: { id: idTacheBot } });
+			if(maxId){
+				if(maxId.createdAt.getTime() === maxId.updatedAt.getTime()){
+					const affectedRows = Horodateur.update({ matiere: 'logBot' }, { where: { id: id } });
+					console.log('le bota bien fermé sa session avant de s\'endormir');
+				}
+			}
+			
 });
-
+*/
 client.on('message', async message => {
 	//si le message commence avec le prefixe on execute ce qui suit et sinon on fait rien
 	if (message.content.startsWith(PREFIX)) {
@@ -42,10 +53,13 @@ client.on('message', async message => {
 			const matiere = splitArgs.shift();
 			
 			const idTache = await Horodateur.max('id');
-			const maxIdMat = await Horodateur.findOne({ where: { id: idTache } });
-			if(maxIdMat){
-				if(maxIdMat.createdAt.getTime() === maxIdMat.updatedAt.getTime()){
-					return message.reply('la derniere session n\'a pas été fermée.');
+
+			if(idTache){
+				const maxIdMat = await Horodateur.findOne({ where: { id: idTache } });
+				if(maxIdMat){
+					if(maxIdMat.createdAt.getTime() === maxIdMat.updatedAt.getTime()){
+						return message.reply('la derniere session n\'a pas été fermée.');
+					}
 				}
 			}
 
@@ -75,7 +89,9 @@ client.on('message', async message => {
 				if(maxIdMatiere.createdAt.getTime() !== maxIdMatiere.updatedAt.getTime()){
 					let creat = maxIdMatiere.createdAt.toString();
 					creat = creat.substring(4, 24);
-					return message.reply(`la derniere session a déjà été fermée. creat: ${creat} updat: ${maxIdMatiere.updatedAt}`);
+					let updat = maxIdMatiere.updatedAt.toString();
+					updat = updat.substring(4, 24);
+					return message.reply(`la derniere session a déjà été fermée. creat: ${creat} updat: ${updat}`);
 				}
 			}
 			//const dateNow = Date.now();
@@ -105,7 +121,11 @@ client.on('message', async message => {
 			// equivalent to: SELECT * FROM tags WHERE name = 'tagName' LIMIT 1;
 			const matiere = await Horodateur.findOne({ where: { matiere: matiereName } });
 			if (matiere) {
-				return message.channel.send(`id | matiere | createdAt | updatedAt \n ${matiere.id} | ${matiereName} | ${matiere.createdAt} | ${matiere.updatedAt}`);
+					let creat = matiere.createdAt.toString();
+					creat = creat.substring(4, 24);
+					let updat = matiere.updatedAt.toString();
+					updat = updat.substring(4, 24);
+				return message.channel.send(`id | matiere | createdAt | updatedAt \n ${matiere.id} | ${matiereName} | ${creat} | ${updat}`);
 			}
 			return message.reply(`Could not find tag: ${matiereName}`);
 		}
@@ -121,15 +141,21 @@ client.on('message', async message => {
 			const idString = matiereList.map(t => t.id).join(', ') || 'No tags set.';
 			const matiereString = matiereList.map(t => t.matiere).join(', ') || 'No tags set.';
 			//t est une valeur du array et on recup les element qui ont la valeur create puis on fomre une string avec virgule
-			const createdAtString = matiereList.map(t => t.createdAt.getTime()).join(', ') || 'No tags set.';
-			const updatedAtString = matiereList.map(t => t.updatedAt.getTime()).join(', ') || 'No tags set.';
-			
+			const createdAtString = matiereList.map(t => t.createdAt.toString().substring(4, 24)).join(', ') || 'No tags set.';
+			const updatedAtString = matiereList.map(t => t.updatedAt.toString().substring(4, 24)).join(', ') || 'No tags set.';			
 			
 			const idArray = matiereList.map(t => t.id);
 			const matiereArray = matiereList.map(t => t.matiere);
-			const createdAtArray = matiereList.map(t => t.createdAt.getTime());
-			const updatedAtArray = matiereList.map(t => t.updatedAt.getTime());
-			
+			const createdAtArray = matiereList.map(t => t.createdAt.toString().substring(4, 24));
+			const updatedAtArray = matiereList.map(t => t.updatedAt.toString().substring(4, 24));
+			/*
+			for(let i in createdAtArray){
+				let creat = createdAtArray[i].toString();
+				createdAtArray[i] = creat.substring(4, 24);
+				let updat = updatedAtArray[i].toString();
+				updatedAtArray[i] = updat.substring(4, 24);
+			}
+			*/
 			const attributLog = 'ID                       MATIERE                  CREATEDAT                UPDATEAT                 \n';
 			var ligneLog = ""; //format25(idArray[0]) + format25(matiereArray[0]) + format25(createdAtArray[0]) + format25(updatedAtArray[0] + '\n');
 			for ( let i in idArray){
@@ -188,8 +214,26 @@ client.on('message', async message => {
 				});
 				return message.channel.send(formatTimeDiff(logSess));
 			}
+			
 			else if (!input[0]){
-			var logTot = 0;
+				let logTot = 0;
+				const allLog = await Horodateur.findAll();
+				const createdAtString = allLog.map(t => t.createdAt.getTime()) || 'No tags set.';
+				const updatedAtString = allLog.map(t => t.updatedAt.getTime()) || 'No tags set.';
+				//console.log(updatedAtString);//un array avec toute les value msec
+				createdAtString.forEach(function(element, index) {
+					//console.log(element+' = createdAtString['+index+']');
+					//console.log(formatTimeDiff(updatedAtString[index]-createdAtString[index]));
+					logTot += updatedAtString[index]-createdAtString[index];
+				});
+				return message.channel.send(formatTimeDiff(logTot));
+			}
+		}
+		
+		
+		else if (command === 'build'){
+			message.reply('ok build patron');
+			let logTot = 0;
 			const allLog = await Horodateur.findAll();
 			const createdAtString = allLog.map(t => t.createdAt.getTime()) || 'No tags set.';
 			const updatedAtString = allLog.map(t => t.updatedAt.getTime()) || 'No tags set.';
@@ -199,8 +243,7 @@ client.on('message', async message => {
 				//console.log(formatTimeDiff(updatedAtString[index]-createdAtString[index]));
 				logTot += updatedAtString[index]-createdAtString[index];
 			});
-			return message.channel.send(formatTimeDiff(logTot));
-			}
+			return logTot ? message.channel.send('amb xD ' + formatTimeDiff(logTot)) : message.reply('désolé patron.. pas de logTot');
 		}
 	}
 });
