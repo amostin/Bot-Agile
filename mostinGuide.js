@@ -12,7 +12,15 @@ client.once('ready', () => {
 	Horodateur.sync({ 
 		//force: true 
 	})
+//	const ligneArray = Horodateur.create({
+//					matiere: 'logBot',
+//				});
 	console.log(`Logged in as ${client.user.tag}!`);
+});
+
+client.on('disconnect', () => {
+	const matiereList = Horodateur.findAll();
+	
 });
 
 client.on('message', async message => {
@@ -32,6 +40,14 @@ client.on('message', async message => {
 			const splitArgs = commandArgs.split(' ');
 			//on prend le premier
 			const matiere = splitArgs.shift();
+			
+			const idTache = await Horodateur.max('id');
+			const maxIdMat = await Horodateur.findOne({ where: { id: idTache } });
+			if(maxIdMat){
+				if(maxIdMat.createdAt.getTime() === maxIdMat.updatedAt.getTime()){
+					return message.reply('la derniere session n\'a pas été fermée.');
+				}
+			}
 
 			try {
 				// equivalent to: INSERT INTO tags (name, description, username) values (?, ?, ?);
@@ -54,6 +70,15 @@ client.on('message', async message => {
 			
 			const id = await Horodateur.max('id');
 			console.log(id);//11
+			const maxIdMatiere = await Horodateur.findOne({ where: { id: id } });
+			if(maxIdMatiere){
+				if(maxIdMatiere.createdAt.getTime() !== maxIdMatiere.updatedAt.getTime()){
+					let creat = maxIdMatiere.createdAt.toString();
+					creat = creat.substring(4, 24);
+					return message.reply(`la derniere session a déjà été fermée. creat: ${creat} updat: ${maxIdMatiere.updatedAt}`);
+				}
+			}
+			//const dateNow = Date.now();
 			// equivalent to: UPDATE tags (descrption) values (?) WHERE name='?';
 			const affectedRows = await Horodateur.update({ matiere: matiereName }, { where: { id: id } });
 			//si le update a reussi, on repond que le tag a bien ete edité et sinon que on a pa pu trouver le ligne a modifier
@@ -184,7 +209,7 @@ function testPreEspace(elementArray){
 	const letterArray = elementArray.split();
 	for (let i in letterArray){
 		if(letterArray[i] === ' ') letterArray.shift();
-		else return letterArray.toSting();
+		else return letterArray.toString();
 	}
 }
 */
