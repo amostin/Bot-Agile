@@ -61,10 +61,12 @@ client.on('message', async message => {
 													if (err) {
 														throw err;
 													}
-				message.reply(data.substring(2, 197));
-				message.pin();
-				console.log('pinné');
+				message.channel.send('amb pin ' + data.substring(2, 197));
 			});
+		}
+		else if(command === 'pin'){
+			//console.log('yaas');
+			message.pin();
 		}
 		
 		else if (command === "fini"){
