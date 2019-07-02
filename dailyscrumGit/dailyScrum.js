@@ -102,6 +102,11 @@ client.on('message', async message => {
 							//let longueurInutile = contentUtile.toString().length;
 							console.log(contentUtile);
 							message.channel.send('amb pin 👍 ' + contentUtile[commandArgs*2]);
+							console.log(contentUtile.length);
+							console.log(commandArgs*2);
+							if((commandArgs*2) === (contentUtile.length-3)){
+								message.reply('BRAVO ! TU AS FINI TES TACHES POUR AUJOURDHUI !!');
+							}
 			});
 		}
 		
@@ -115,7 +120,8 @@ client.on('message', async message => {
 		else if (command === "xD") {
 			let statLogTemp = message;
 			console.log(statLogTemp);
-			statLog.push(statLogTemp.content.substring(7));
+			//le premier elem du tabLog sera tj le log global
+			statLog[0] = statLogTemp.content.substring(7);
 			console.log(statLog[0]);
 		}
 		
