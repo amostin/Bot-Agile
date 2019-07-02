@@ -61,32 +61,56 @@ client.on('message', async message => {
 													if (err) {
 														throw err;
 													}
-				message.reply(data.substring(2, 197));
-				message.pin();
-				console.log('pinné');
+											const content = data;
+				//console.log(data);
+				//message.reply(content);
+				const contentUtile = content.substring(2, 197).split('\n');
+				const contentIndesirableDebut = contentUtile.splice(0, 2);
+				contentUtile.pop();
+				contentUtile.pop();
+				//var contentIndesirableFin = contentUtile.splice(((contentIndesirableDebut.length)-2), 2);
+				//contentIndesirableFin = contentIndesirableDebut.shift();
+				console.log(contentUtile);
+				let contentUtileSansFut = "";
+				for(let i = 0; i<contentUtile.length; i++){
+					//if(i>= contentUtile.length) break;
+					contentUtileSansFut += contentUtile[i] + '\n';
+				}
+				
+				message.channel.send(`amb pin \n ${contentUtileSansFut}`);
 			});
 		}
 		
 		else if (command === "fini"){
-			// Get pinned messages
-			message.channel.fetchPinnedMessages()
-			  .then(
-				messages => {
-					//1 pinné message.reply(`Received ${messages.size} messages`);
-					//object message.reply(`${typeof(messages)}`);
-					console.log('ok1');
-					for (let key of messages) {
-						console.log('ok2');
-						  //if (messages.hasOwnProperty(key)) {
-							  console.log('ok3');
-								console.log(messages[key]);
-						  //}
-					}
-					//message.reply(`${messages[key]}`);
-				}
-			  )
-			  .catch(console.error);
+			fs.readFile("./todoLog.txt", 'utf8', function read(err, data) {
+														if (err) {
+															throw err;
+														}
+
+							//on stocke le buffer de maniere durable
+							//wtf une fois ça marche avec data, une fois const, ...
+							const content = data;
+							//console.log(data);
+							//message.reply(content);
+							const contentUtile = content.substring(2, 197).split('\n');
+							//message.reply(contentUtile);
+							console.log('todoLog.txt lu!');
+							//message.reply(contentUtile[commandArgs] + ' 👍👍👍👍👍');
+							
+							//let longueurInutile = contentUtile.toString().length;
+							console.log(contentUtile);
+							message.channel.send('amb pin ' + contentUtile[commandArgs*2]);
+			});
 		}
+		
+		else if(command === 'pin'){
+			//console.log('yaas');
+			//commandInutile = message.content.slice(PREFIX.length+command.length);
+			//console.log(commandInutile);
+			message.pin();
+		}
+		
+
 		
 		
 		else if(command === "ping"){ // Check if message is "!ping"
@@ -224,4 +248,25 @@ client.login('NTk0OTk5MDgxMDA5NDE0MTUw.XRkmHg.aa8u5sd1QhBP693Ln5r-Lf_t9ck');
 												});
 					});		
 			});
+			
+			
+			
+			
+			message.channel.fetchPinnedMessages()
+			  .then(
+				messages => {
+					//1 pinné message.reply(`Received ${messages.size} messages`);
+					//object message.reply(`${typeof(messages)}`);
+					console.log('ok1');
+					for (let key of messages) {
+						console.log('ok2');
+						  //if (messages.hasOwnProperty(key)) {
+							  console.log('ok3');
+								console.log(messages[key]);
+						  //}
+					}
+					//message.reply(`${messages[key]}`);
+				}
+			  )
+			  .catch(console.error);
 */
