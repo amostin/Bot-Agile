@@ -70,10 +70,13 @@ client.on('message', async message => {
 												if (err) {
 													throw err;
 												}
-			data = data.substring(2, 197).split('\n');
+			//on stocke le buffer de maniere durable
+			let content = data;
+			content = content.substring(2, 197).split('\n');
 			//let dataArray = data.split(' ');
 			//let dataChecked = dataArray.map(() => );
-			return message.reply(data[1] + ' 👍👍👍👍👍');
+			
+			return message.reply(content[commandArgs] + ' 👍👍👍👍👍');
 			});
 		}
 		
@@ -90,7 +93,23 @@ client.on('message', async message => {
 			for(let i = 0; i<names.length; i++){
 				string += names[i] +'\n';
 			}
-			fs.writeFileSync("./test.txt", 'ok regarde: '+string);
+			fs.open('./test.txt', 'w', function (err, fd) {
+										if (err) throw err;
+										console.log('test.txt ouvert!');
+
+										fs.write(fd, 'Possibilité de "cocher" ce qui est fait  👍👍👍👍👍', function (err, written, string) {
+																							if (err) {
+																								throw err;
+																							}
+													
+										});
+										fs.close(fd, (err) => {
+														if (err) throw err;
+														console.log('test.txt fermé');
+													});
+			});			
+
+
 			message.reply(string);
 		}
 	}
