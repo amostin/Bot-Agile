@@ -5,7 +5,7 @@ const client = new Discord.Client();
 const { Daily_scrum } = require('./dbObjects');
 const { Horodateur } = require('../mostinGuide/dbObjects');
 const PREFIX = 'amb ';
-var statLog = [];
+var statLog = new Object();
 
 client.once('ready', () => {
 	Horodateur.sync({ 
@@ -106,6 +106,7 @@ client.on('message', async message => {
 							console.log(commandArgs*2);
 							if((commandArgs*2) === (contentUtile.length-3)){
 								message.reply('BRAVO ! TU AS FINI TES TACHES POUR AUJOURDHUI !!');
+								
 							}
 			});
 		}
@@ -121,8 +122,8 @@ client.on('message', async message => {
 			let statLogTemp = message;
 			console.log(statLogTemp);
 			//le premier elem du tabLog sera tj le log global
-			statLog[0] = statLogTemp.content.substring(7);
-			console.log(statLog[0]);
+			statLog.global = statLogTemp.content.substring(7);
+			console.log(statLog.global);
 		}
 		
 		
@@ -140,7 +141,7 @@ client.on('message', async message => {
 			.setAuthor('Je suis l\'auteur de ce paradis', 'https://i.imgur.com/wSTFkRM.png', 'https://discord.js.org')
 			.setDescription('Nous voici face a ton espace de satisfaction. \n Ici tu as accès à toute les stats dispo pour prendre conscience du chemin parcouru.')
 			.setThumbnail('https://i.imgur.com/wSTFkRM.png')
-			.addField('Temps de connexion total: ', `${statLog[0]}`)
+			.addField('Temps de connexion total: ', `${statLog.global}`)
 			.addBlankField()
 			.addField('Temps de connexion total par session', 'je vais essayer de recup la valeur du fichier log', true)
 			.addField('Temps de connexion total par session', 'Some value here', true)
