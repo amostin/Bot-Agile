@@ -62,45 +62,30 @@ client.on('message', async message => {
 														throw err;
 													}
 				message.reply(data.substring(2, 197));
+				message.pin();
+				console.log('pinné');
 			});
 		}
 		
 		else if (command === "fini"){
-			fs.open('./todoLog.txt', 'a', function (err, fd) {
-										if (err) throw err;
-										console.log('todoLog.txt ouvert!');
-
-					fs.readFile("./todoLog.txt", 'utf8', function read(err, data) {
-														if (err) {
-															throw err;
-														}
-
-							//on stocke le buffer de maniere durable
-							//wtf une fois ça marche avec data, une fois const, ...
-							const content = data;
-							console.log(data);
-							//message.reply(content);
-							const contentUtile = content.substring(2, 197).split('\n');
-							//message.reply(contentUtile);
-							console.log('todoLog.txt lu!');
-							//message.reply(contentUtile[commandArgs] + ' 👍👍👍👍👍');
-							
-							//let longueurInutile = content.toString().length;
-							fs.write(fd, contentUtile[commandArgs] + ' 👍👍👍👍👍', function (err, written, string) {
-																			if (err) {
-																				throw err;
-																			}
-												return message.reply(contentUtile[commandArgs] + ' 👍👍👍👍👍');
-									});
-									fs.close(fd, (err) => {
-													if (err) throw err;
-													console.log('todoLog.txt fermé');
-												});
-					});		
-			
-			
-
-			});
+			// Get pinned messages
+			message.channel.fetchPinnedMessages()
+			  .then(
+				messages => {
+					//1 pinné message.reply(`Received ${messages.size} messages`);
+					//object message.reply(`${typeof(messages)}`);
+					console.log('ok1');
+					for (let key of messages) {
+						console.log('ok2');
+						  //if (messages.hasOwnProperty(key)) {
+							  console.log('ok3');
+								console.log(messages[key]);
+						  //}
+					}
+					//message.reply(`${messages[key]}`);
+				}
+			  )
+			  .catch(console.error);
 		}
 		
 		
@@ -119,8 +104,9 @@ client.on('message', async message => {
 			fs.open('./test.txt', 'w', function (err, fd) {
 										if (err) throw err;
 										console.log('test.txt ouvert!');
-
-										fs.write(fd, 'Possibilité de "cocher" ce qui est fait  👍👍👍👍👍', function (err, written, string) {
+					
+										let modif = 'Possibilité de "cocher" ce qui est fait  👍👍👍👍👍';
+										fs.write(fd, modif, function (err, written, string) {
 																							if (err) {
 																								throw err;
 																							}
@@ -202,3 +188,40 @@ function formatTimeDiff(difference){
 };
 
 client.login('NTk0OTk5MDgxMDA5NDE0MTUw.XRkmHg.aa8u5sd1QhBP693Ln5r-Lf_t9ck');
+
+/*
+			//putain les flags je les ai cherché et jaurais du insister direct car cest pour ca que ça ecrivait a la fin tj 
+			fs.open('./doneLog.txt', 'w+', function (err, fd) {
+										if (err) throw err;
+										console.log('doneLog.txt ouvert!');
+
+					fs.readFile("./todoLog.txt", 'utf8', function read(err, data) {
+														if (err) {
+															throw err;
+														}
+
+							//on stocke le buffer de maniere durable
+							//wtf une fois ça marche avec data, une fois const, ...
+							const content = data;
+							//console.log(data);
+							//message.reply(content);
+							const contentUtile = content.substring(2, 197).split('\n');
+							//message.reply(contentUtile);
+							console.log('todoLog.txt lu!');
+							//message.reply(contentUtile[commandArgs] + ' 👍👍👍👍👍');
+							
+							//let longueurInutile = contentUtile.toString().length;
+							console.log(contentUtile);
+							fs.write(fd, contentUtile[commandArgs] + ' 👍👍👍👍👍', function (err, written, string) {
+																			if (err) {
+																				throw err;
+																			}
+												return message.reply(contentUtile[commandArgs] + ' 👍👍👍👍👍');
+									});
+									fs.close(fd, (err) => {
+													if (err) throw err;
+													console.log('todoLog.txt fermé');
+												});
+					});		
+			});
+*/
