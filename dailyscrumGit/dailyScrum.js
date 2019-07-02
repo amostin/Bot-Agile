@@ -66,17 +66,40 @@ client.on('message', async message => {
 		}
 		
 		else if (command === "fini"){
-			fs.readFile("./todoLog.txt", 'utf8', function read(err, data) {
-												if (err) {
-													throw err;
-												}
-			//on stocke le buffer de maniere durable
-			let content = data;
-			content = content.substring(2, 197).split('\n');
-			//let dataArray = data.split(' ');
-			//let dataChecked = dataArray.map(() => );
+			fs.open('./todoLog.txt', 'a', function (err, fd) {
+										if (err) throw err;
+										console.log('todoLog.txt ouvert!');
+
+					fs.readFile("./todoLog.txt", 'utf8', function read(err, data) {
+														if (err) {
+															throw err;
+														}
+
+							//on stocke le buffer de maniere durable
+							//wtf une fois ça marche avec data, une fois const, ...
+							const content = data;
+							console.log(data);
+							//message.reply(content);
+							const contentUtile = content.substring(2, 197).split('\n');
+							//message.reply(contentUtile);
+							console.log('todoLog.txt lu!');
+							//message.reply(contentUtile[commandArgs] + ' 👍👍👍👍👍');
+							
+							//let longueurInutile = content.toString().length;
+							fs.write(fd, contentUtile[commandArgs] + ' 👍👍👍👍👍', function (err, written, string) {
+																			if (err) {
+																				throw err;
+																			}
+												return message.reply(contentUtile[commandArgs] + ' 👍👍👍👍👍');
+									});
+									fs.close(fd, (err) => {
+													if (err) throw err;
+													console.log('todoLog.txt fermé');
+												});
+					});		
 			
-			return message.reply(content[commandArgs] + ' 👍👍👍👍👍');
+			
+
 			});
 		}
 		
