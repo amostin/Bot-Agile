@@ -243,7 +243,10 @@ client.on('message', async message => {
 				//console.log(formatTimeDiff(updatedAtString[index]-createdAtString[index]));
 				logTot += updatedAtString[index]-createdAtString[index];
 			});
-			return logTot ? message.channel.send('amb xD ' + formatTimeDiff(logTot)) : message.reply('désolé patron.. pas de logTot');
+			var statTab = [];
+			statTab.push(formatTimeDiff(logTot));
+			statTab.push(commandArgs);
+			return logTot ? message.channel.send('amb xD ' + statTab[0] + '\n' + statTab[1]) : message.reply('désolé patron.. pas de logTot');
 		}
 	}
 });
