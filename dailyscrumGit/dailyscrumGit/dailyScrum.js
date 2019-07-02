@@ -25,12 +25,12 @@ client.on('message', async message => {
 			//pas ecrire ce que le bot ecrit
 			if(message.author.bot) return;
 			//message.reply(commandArgs);
-			const rapportTab = message.content.slice(PREFIX.length).split('?');
+			const rapportTab = message.content.slice(PREFIX.length+command.length).split('?');
 			
 			let date = new Date();
-			let rapportTotal = `\n\n Le ${parseJour(date.getDay())} ${date.getDate()} ${parseMois(date.getMonth())} ${date.getFullYear()}`;
+			let rapportTotal = `\n\n Le ${parseJour(date.getDay())} ${date.getDate()} ${parseMois(date.getMonth())} ${date.getFullYear()} \n`;
 			for(let i = 0; i<rapportTab.length; i++){
-				rapportTotal += rapportTab[i] +'<FIN PARTIE DU RAPPORT>';
+				rapportTotal += rapportTab[i] + '?'; // +'<FIN PARTIE DU RAPPORT>';
 			}
 			fs.appendFile("./rapportLog.txt", rapportTotal,  function (err) {
 																  if (err) throw err;
@@ -42,8 +42,9 @@ client.on('message', async message => {
 			let todoList = `\n\n Le ${parseJour(date.getDay())} ${date.getDate()} ${parseMois(date.getMonth())} ${date.getFullYear()}`;
 			//.getDate().getMonth().getFullYear()
 			for(let i = 0; i<todoArray.length; i++){
-				todoList += todoArray[i] +'<?>';
+				todoList += todoArray[i]; //+'<?>';
 			}
+			todoList = todoList.substring();
 			fs.appendFile("./todoLog.txt", todoList,  function (err) {
 														  if (err) throw err;
 															console.log('todo list maj!');
@@ -52,6 +53,39 @@ client.on('message', async message => {
 														
 			message.reply(`rapport loggé: ${rapportTotal}\n------------------------------todo list mise à jour: ${todoList}`);
 			//message.reply(`longueur: ${rapportTab.length}\n 1er elem: ${rapportTab[0]}\n 2eme elem: ${rapportTab[1]}\n 3eme elem: ${rapportTab[2]}\n 4eme elem: ${rapportTab[3]}\n`);
+		}
+		
+		else if (command === "todolist"){
+			//si on met pas utf8 on recoit un buffer brut alors qu'on veut une string
+			fs.readFile("./todoLog.txt", 'utf8', function read(err, data) {
+													if (err) {
+														throw err;
+													}
+				message.reply(data.substring(2, 197));
+				message.pin();
+				console.log('pinné');
+			});
+		}
+		
+		else if (command === "fini"){
+			// Get pinned messages
+			message.channel.fetchPinnedMessages()
+			  .then(
+				messages => {
+					//1 pinné message.reply(`Received ${messages.size} messages`);
+					//object message.reply(`${typeof(messages)}`);
+					console.log('ok1');
+					for (let key of messages) {
+						console.log('ok2');
+						  //if (messages.hasOwnProperty(key)) {
+							  console.log('ok3');
+								console.log(messages[key]);
+						  //}
+					}
+					//message.reply(`${messages[key]}`);
+				}
+			  )
+			  .catch(console.error);
 		}
 		
 		
@@ -67,7 +101,24 @@ client.on('message', async message => {
 			for(let i = 0; i<names.length; i++){
 				string += names[i] +'\n';
 			}
-			fs.writeFileSync("./test.txt", 'ok regarde: '+string);
+			fs.open('./test.txt', 'w', function (err, fd) {
+										if (err) throw err;
+										console.log('test.txt ouvert!');
+					
+										let modif = 'Possibilité de "cocher" ce qui est fait  👍👍👍👍👍';
+										fs.write(fd, modif, function (err, written, string) {
+																							if (err) {
+																								throw err;
+																							}
+													
+										});
+										fs.close(fd, (err) => {
+														if (err) throw err;
+														console.log('test.txt fermé');
+													});
+			});			
+
+
 			message.reply(string);
 		}
 	}
@@ -137,3 +188,40 @@ function formatTimeDiff(difference){
 };
 
 client.login('NTk0OTk5MDgxMDA5NDE0MTUw.XRkmHg.aa8u5sd1QhBP693Ln5r-Lf_t9ck');
+
+/*
+			//putain les flags je les ai cherché et jaurais du insister direct car cest pour ca que ça ecrivait a la fin tj 
+			fs.open('./doneLog.txt', 'w+', function (err, fd) {
+										if (err) throw err;
+										console.log('doneLog.txt ouvert!');
+
+					fs.readFile("./todoLog.txt", 'utf8', function read(err, data) {
+														if (err) {
+															throw err;
+														}
+
+							//on stocke le buffer de maniere durable
+							//wtf une fois ça marche avec data, une fois const, ...
+							const content = data;
+							//console.log(data);
+							//message.reply(content);
+							const contentUtile = content.substring(2, 197).split('\n');
+							//message.reply(contentUtile);
+							console.log('todoLog.txt lu!');
+							//message.reply(contentUtile[commandArgs] + ' 👍👍👍👍👍');
+							
+							//let longueurInutile = contentUtile.toString().length;
+							console.log(contentUtile);
+							fs.write(fd, contentUtile[commandArgs] + ' 👍👍👍👍👍', function (err, written, string) {
+																			if (err) {
+																				throw err;
+																			}
+												return message.reply(contentUtile[commandArgs] + ' 👍👍👍👍👍');
+									});
+									fs.close(fd, (err) => {
+													if (err) throw err;
+													console.log('todoLog.txt fermé');
+												});
+					});		
+			});
+*/
