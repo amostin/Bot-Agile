@@ -34,6 +34,15 @@ client.on('disconnect', async event => {
 			
 });
 */
+//envoi un message avec le nom du gars qui viens de joindre le serveur
+client.on("guildMemberAdd", (member) => {
+	let guild = member.guild; // Reading property `guild` of guildmember object.
+	let memberTag = member.user.tag; // GuildMembers don't have a tag property, read property user of guildmember to get the user object from it
+	if(guild.systemChannel){ // Checking if it's not null
+		guild.systemChannel.send(memberTag + " has joined!");
+	}
+});
+
 client.on('message', async message => {
 	//si le message commence avec le prefixe on execute ce qui suit et sinon on fait rien
 	if (message.content.startsWith(PREFIX)) {
