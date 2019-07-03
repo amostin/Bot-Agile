@@ -32,29 +32,53 @@ client.on('message', async message => {
 			let date = new Date();
 			let rapportTotal = `\n\n Le ${parseJour(date.getDay())} ${date.getDate()} ${parseMois(date.getMonth())} ${date.getFullYear()} \n`;
 			for(let i = 0; i<rapportTab.length; i++){
-				rapportTotal += rapportTab[i] + '?'; // +'<FIN PARTIE DU RAPPORT>';
+				if (!(i == rapportTab.length-1)) rapportTotal += rapportTab[i] + '?'; 
+				else rapportTotal += rapportTab[i];
 			}
-			fs.appendFile("./rapportLog.txt", rapportTotal,  function (err) {
+			fs.writeFile("./rapportLog.txt", rapportTotal,  function (err) {
 																  if (err) throw err;
 																	
 																	console.log('rapport loggé!');
-																});
-			
-			let todoArray = rapportTab[2].split('\r\n');
-			let todoList = `\n\n Le ${parseJour(date.getDay())} ${date.getDate()} ${parseMois(date.getMonth())} ${date.getFullYear()}`;
+																});	
+			let todoList = `\n\n Le ${parseJour(date.getDay())} ${date.getDate()} ${parseMois(date.getMonth())} ${date.getFullYear()} ${rapportTab[2]}`;
 			//.getDate().getMonth().getFullYear()
-			for(let i = 0; i<todoArray.length; i++){
-				todoList += todoArray[i]; //+'<?>';
-			}
-			todoList = todoList.substring();
-			fs.appendFile("./todoLog.txt", todoList,  function (err) {
+			//for(let i = 0; i<todoArray.length; i++){
+				//todoList += todoArray[i]; //+'<?>';
+			//}
+			longTodoList = todoList.length;
+			todoList = todoList.substring(0, (longTodoList-25));
+			fs.writeFile("./todoLog.txt", todoList,  function (err) {
 														  if (err) throw err;
 															console.log('todo list maj!');
 														});
 														
 														
 			message.reply(`rapport loggé: ${rapportTotal}\n------------------------------todo list mise à jour: ${todoList}`);
+			message.channel.send('amb todolist ');
 			//message.reply(`longueur: ${rapportTab.length}\n 1er elem: ${rapportTab[0]}\n 2eme elem: ${rapportTab[1]}\n 3eme elem: ${rapportTab[2]}\n 4eme elem: ${rapportTab[3]}\n`);
+			
+			const hierData = getRapportBdd(rapportTab, 1, 32);
+			const ajdData = getRapportBdd(rapportTab, 2, 25);
+			const blokeData = getRapportBdd(rapportTab, 3);
+			const nbreLigneMax = Math.max(hierData.length, ajdData.length, blokeData.length);
+			
+			const hierBdd = remplirTrouBdd(hierData, nbreLigneMax);
+			const ajdBdd = remplirTrouBdd(ajdData, nbreLigneMax);
+			const blokeBdd = remplirTrouBdd(blokeData, nbreLigneMax);
+			
+			try {
+				for( let i in hierBdd){
+					const ligneTab = await Horodateur.create({
+						hier: hierBdd[i],
+						ajd: ajdBdd[i],
+						bloke: blokeBdd[i],
+					});
+					return message.reply(`Ligne ajoutée: ${hierBdd[i]} ${ajdBdd[i]} ${blokeBdd[i]}`);
+				}
+			}
+			catch (e) {
+				return message.reply('Something went wrong with adding a tag.');
+			}
 		}
 		
 		else if (command === "todolist"){
@@ -162,6 +186,30 @@ client.on('message', async message => {
 
 	}
 });
+
+function remplirTrouBdd(tab, nbreLigneMax){
+	if (tab.length < nbreLigneMax){
+	const nbreManquant = nbreLigneMax - tab.length;
+		for(let i = 0; i<nbreManquant; i++){
+			tab.push('nada');
+		}
+	}
+	return tab;
+}
+
+//prend un tableau et enleve infos impertinente puis renvoi un tab clean avec juste les datas a envoyer a bdd
+function getRapportBdd(rapportTab, index, offset = 0){
+	const colonne = rapportTab[index].toString();
+	const longColonne = colonne.length;
+	const colonneString = colonne.substring(0, (longColonne-offset));
+	console.log(colonneString);
+	const colonneTab = colonneString.split('\n');
+	console.log(colonneTab);
+	const colonneTabFiltr = colonneTab.filter(word => word.length > 1);
+	colonneTabFiltr.forEach( element => console.log(element));
+	console.log(colonneTabFiltr.length);
+	return colonneTabFiltr;
+}
 
 function parseJour(indexDuJour){
 		switch (indexDuJour){
