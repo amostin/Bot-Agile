@@ -1,3 +1,5 @@
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 const Discord = require('discord.js');
 const fs = require("fs");
 const client = new Discord.Client();
