@@ -6,14 +6,17 @@ const fs = require("fs");
 const client = new Discord.Client();
 const { Daily_scrum } = require('./dbObjects');
 const { Horodateur } = require('../mostinGuide/dbObjects');
+//collection pour stocker todo
+const todoColl = new Discord.Collection();
 
+var ajdString;
 
 const PREFIX = 'amb ';
 var stat = new Object();
 
 client.once('ready', () => {
 	Daily_scrum.sync({ 
-		force: true 
+		//force: true 
 	})
 	console.log(`Logged in as ${client.user.tag}!`);
 });
@@ -83,37 +86,40 @@ client.on('message', async message => {
 		else if (command === "todolist"){
 			
 			const ajd = await Daily_scrum.findAll({ attributes: ['ajd'] });
-			const ajdString = ajd.map(t => t.ajd).join('\n');
+			ajd.map((t, i) => todoColl.set(i, t.ajd));
+			console.log(todoColl.get(1));
+			ajdString = ajd.map((t, i) => i + ': ' +t.ajd).join('\n');
+			
 			//console.log(ajdString);
-			ajdString.length > 1 ? message.channel.send(`amb pin ${ajdString}`) : message.reply('Je n\'ai pas su trouver de tache dans la bdd. Excusez moi monsieur.');
-			/*
-			//si on met pas utf8 on recoit un buffer brut alors qu'on veut une string
-			fs.readFile("./todoLog.txt", 'utf8', function read(err, data) {
-													if (err) {
-														throw err;
-													}
-											const content = data;
-				//console.log(data);
-				//message.reply(content);
-				const contentUtile = content.substring(2, 197).split('\n');
-				const contentIndesirableDebut = contentUtile.splice(0, 2);
-				contentUtile.pop();
-				contentUtile.pop();
-				//var contentIndesirableFin = contentUtile.splice(((contentIndesirableDebut.length)-2), 2);
-				//contentIndesirableFin = contentIndesirableDebut.shift();
-				console.log(contentUtile);
-				let contentUtileSansFut = "";
-				for(let i = 0; i<contentUtile.length; i++){
-					//if(i>= contentUtile.length) break;
-					contentUtileSansFut += contentUtile[i] + '\n';
-				}
-				
-				message.channel.send(`amb pin \n ${contentUtileSansFut}`);
-			});
-			*/
+			ajdString.length > 1 ? message.channel.send(`amb pin \n${ajdString}`) : message.reply('Je n\'ai pas su trouver de tache dans la bdd. Excusez moi monsieur.');
+
 		}
 		
 		else if (command === "fini"){
+			const todoTab = ajdString.split('\n');
+			console.log(todoTab);
+			//console.log(Daily_scrum.sequelize);
+			
+			/*
+			Daily_scrum.sequelize.query("SELECT * FROM daily_scrum", { type: Daily_scrum.sequelize.QueryTypes.SELECT})
+			  .then(users => { 
+				console.log('yoooo');
+			  }).catch(err => {
+												console.log(`erreur dans la requete raw: ${err}`);
+											});
+			
+			
+			
+			const ajd = await Daily_scrum.findAll({attributes: ['ajd'],})
+					//const idString = ajd.map(t => t.id).join(', ') || 'No tags set.';
+
+											.then(dr => { console.log(dr.dataValues); })
+											.catch(err => {
+												console.log(`erreur dans la recup de teche ajd: ${err}`);
+											});
+			
+			
+			/*
 			fs.readFile("./todoLog.txt", 'utf8', function read(err, data) {
 														if (err) {
 															throw err;
@@ -142,13 +148,14 @@ client.on('message', async message => {
 					message.channel.send('amb build '+ stat.finTodoJournalier);
 				}
 			});
+			*/
 		}
 		
 		else if(command === 'pin'){
 			//console.log('yaas');
 			//commandInutile = message.content.slice(PREFIX.length+command.length);
 			//console.log(commandInutile);
-			message.content = message.content.substring(8);
+			message.content = message.content.replace('amb pin ', "");
 			message.pin();
 		}
 		
@@ -390,4 +397,30 @@ client.login('NTk0OTk5MDgxMDA5NDE0MTUw.XRkmHg.aa8u5sd1QhBP693Ln5r-Lf_t9ck');
 			});			
 			message.reply(string);
 		}
+		
+					/*
+			//si on met pas utf8 on recoit un buffer brut alors qu'on veut une string
+			fs.readFile("./todoLog.txt", 'utf8', function read(err, data) {
+													if (err) {
+														throw err;
+													}
+											const content = data;
+				//console.log(data);
+				//message.reply(content);
+				const contentUtile = content.substring(2, 197).split('\n');
+				const contentIndesirableDebut = contentUtile.splice(0, 2);
+				contentUtile.pop();
+				contentUtile.pop();
+				//var contentIndesirableFin = contentUtile.splice(((contentIndesirableDebut.length)-2), 2);
+				//contentIndesirableFin = contentIndesirableDebut.shift();
+				console.log(contentUtile);
+				let contentUtileSansFut = "";
+				for(let i = 0; i<contentUtile.length; i++){
+					//if(i>= contentUtile.length) break;
+					contentUtileSansFut += contentUtile[i] + '\n';
+				}
+				
+				message.channel.send(`amb pin \n ${contentUtileSansFut}`);
+			});
+			*/
 */
