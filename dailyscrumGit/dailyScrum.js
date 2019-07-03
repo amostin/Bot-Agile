@@ -1,15 +1,19 @@
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 const Discord = require('discord.js');
 //utile pour lire et ecrire fichier en local
 const fs = require("fs");
 const client = new Discord.Client();
 const { Daily_scrum } = require('./dbObjects');
 const { Horodateur } = require('../mostinGuide/dbObjects');
+
+
 const PREFIX = 'amb ';
 var stat = new Object();
 
 client.once('ready', () => {
-	Horodateur.sync({ 
-		//force: true 
+	Daily_scrum.sync({ 
+		force: true 
 	})
 	console.log(`Logged in as ${client.user.tag}!`);
 });
@@ -54,34 +58,35 @@ client.on('message', async message => {
 														
 														
 			message.reply(`rapport loggé: ${rapportTotal}\n------------------------------todo list mise à jour: ${todoList}`);
-			message.channel.send('amb todolist ');
+			
 			//message.reply(`longueur: ${rapportTab.length}\n 1er elem: ${rapportTab[0]}\n 2eme elem: ${rapportTab[1]}\n 3eme elem: ${rapportTab[2]}\n 4eme elem: ${rapportTab[3]}\n`);
 			
 			const hierData = getRapportBdd(rapportTab, 1, 32);
 			const ajdData = getRapportBdd(rapportTab, 2, 25);
-			const blokeData = getRapportBdd(rapportTab, 3);
-			const nbreLigneMax = Math.max(hierData.length, ajdData.length, blokeData.length);
+			const blockeData = getRapportBdd(rapportTab, 3);
+			const nbreLigneMax = Math.max(hierData.length, ajdData.length, blockeData.length);
 			
 			const hierBdd = remplirTrouBdd(hierData, nbreLigneMax);
 			const ajdBdd = remplirTrouBdd(ajdData, nbreLigneMax);
-			const blokeBdd = remplirTrouBdd(blokeData, nbreLigneMax);
+			const blockeBdd = remplirTrouBdd(blockeData, nbreLigneMax);
+			console.log(hierBdd[0], ajdBdd[0], blockeBdd[0]);
 			
-			try {
-				for( let i in hierBdd){
-					const ligneTab = await Horodateur.create({
-						hier: hierBdd[i],
-						ajd: ajdBdd[i],
-						bloke: blokeBdd[i],
-					});
-					return message.reply(`Ligne ajoutée: ${hierBdd[i]} ${ajdBdd[i]} ${blokeBdd[i]}`);
-				}
-			}
-			catch (e) {
-				return message.reply('Something went wrong with adding a tag.');
+			for( let i = 0; i<nbreLigneMax; i++){
+				var ligneTab = await Daily_scrum.create({
+					hier: hierBdd[i],
+					ajd: ajdBdd[i],
+					blocke: blockeBdd[i],
+				}).then(message.channel.send('amb todolist '));
 			}
 		}
 		
 		else if (command === "todolist"){
+			
+			const ajd = await Daily_scrum.findAll({ attributes: ['ajd'] });
+			const ajdString = ajd.map(t => t.ajd).join('\n');
+			//console.log(ajdString);
+			ajdString.length > 1 ? message.channel.send(`amb pin ${ajdString}`) : message.reply('Je n\'ai pas su trouver de tache dans la bdd. Excusez moi monsieur.');
+			/*
 			//si on met pas utf8 on recoit un buffer brut alors qu'on veut une string
 			fs.readFile("./todoLog.txt", 'utf8', function read(err, data) {
 													if (err) {
@@ -105,6 +110,7 @@ client.on('message', async message => {
 				
 				message.channel.send(`amb pin \n ${contentUtileSansFut}`);
 			});
+			*/
 		}
 		
 		else if (command === "fini"){
@@ -113,28 +119,28 @@ client.on('message', async message => {
 															throw err;
 														}
 
-							//on stocke le buffer de maniere durable
-							//wtf une fois ça marche avec data, une fois const, ...
-							const content = data;
-							//console.log(data);
-							//message.reply(content);
-							const contentUtile = content.substring(2, 197).split('\n');
-							//message.reply(contentUtile);
-							console.log('todoLog.txt lu!');
-							//message.reply(contentUtile[commandArgs] + ' 👍👍👍👍👍');
-							
-							//let longueurInutile = contentUtile.toString().length;
-							console.log(contentUtile);
-							message.channel.send('amb pin 👍 ' + contentUtile[commandArgs*2]);
-							console.log(contentUtile.length);
-							console.log(commandArgs*2);
-							if((commandArgs*2) === (contentUtile.length-3)){
-								message.reply('BRAVO ! TU AS FINI TES TACHES POUR AUJOURDHUI !!\n Tu vas recevoir un badge avec le jour où ça à été fait pour qu\'on puisse voir si t\'es endurant');
-								let date = new Date();
-								stat.finTodoJournalier = date.toString().substring(0, 25);
-								console.log(stat);
-								message.channel.send('amb build '+ stat.finTodoJournalier);
-							}
+				//on stocke le buffer de maniere durable
+				//wtf une fois ça marche avec data, une fois const, ...
+				const content = data;
+				//console.log(data);
+				//message.reply(content);
+				const contentUtile = content.substring(2, 197).split('\n');
+				//message.reply(contentUtile);
+				console.log('todoLog.txt lu!');
+				//message.reply(contentUtile[commandArgs] + ' 👍👍👍👍👍');
+				
+				//let longueurInutile = contentUtile.toString().length;
+				console.log(contentUtile);
+				message.channel.send('amb pin 👍 ' + contentUtile[commandArgs*2]);
+				console.log(contentUtile.length);
+				console.log(commandArgs*2);
+				if((commandArgs*2) === (contentUtile.length-3)){
+					message.reply('BRAVO ! TU AS FINI TES TACHES POUR AUJOURDHUI !!\n Tu vas recevoir un badge avec le jour où ça à été fait pour qu\'on puisse voir si t\'es endurant');
+					let date = new Date();
+					stat.finTodoJournalier = date.toString().substring(0, 25);
+					console.log(stat);
+					message.channel.send('amb build '+ stat.finTodoJournalier);
+				}
 			});
 		}
 		
@@ -179,11 +185,29 @@ client.on('message', async message => {
 			.setFooter('Dernière connexion: ', 'https://i.imgur.com/wSTFkRM.png');
 		message.channel.send(exampleEmbed);
 		console.log(stat);
+		
+
+		const matiereList = await Daily_scrum.findAll();
+		const idString = matiereList.map(t => t.id).join(', ') || 'No tags set.';
+		//message.reply('voila ta ta preuve tes content ??' + idString);
 		}
+		else if (command === 'montrebdd') {
 
-		
-		
-
+			console.log('ok 1');
+			const rapportList = await Daily_scrum.findAll();
+			if(rapportList){
+				console.log('ok?');
+				const idString = rapportList.map(t => t.id).join(', ') || 'No tags set.';
+				const hierString = rapportList.map(t => t.hier).join(', ') || 'No tags set.';
+				const ajdString = rapportList.map(t => t.ajd).join(', ') || 'No tags set.';
+				const blokeString = rapportList.map(t => t.blocke).join(', ') || 'No tags set.';
+				const createdAtString = rapportList.map(t => t.createdAt.toString().substring(4, 24)).join(', ') || 'No tags set.';
+				const updatedAtString = rapportList.map(t => t.updatedAt.toString().substring(4, 24)).join(', ') || 'No tags set.';			
+				
+				return message.channel.send(`List of id: ${idString} \n List of hier: ${hierString} \n List of ajd: ${ajdString} \n List of blocke: ${blokeString} \n List of creation: ${createdAtString} \n List of update: ${updatedAtString} \n `);
+			}
+			else return message.channel.send(`On dirait que la BDD est vide Patron!`);
+		}
 	}
 });
 
