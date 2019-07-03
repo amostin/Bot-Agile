@@ -76,7 +76,7 @@ client.on('message', async message => {
 					hier: hierBdd[i],
 					ajd: ajdBdd[i],
 					blocke: blockeBdd[i],
-				}).then(message.channel.send('amb todolist '));
+				}).then((i === (nbreLigneMax - 1)) ? message.channel.send('amb todolist ') : console.log('la bdd se rempli hier, ajd, blcke'));
 			}
 		}
 		
@@ -148,6 +148,7 @@ client.on('message', async message => {
 			//console.log('yaas');
 			//commandInutile = message.content.slice(PREFIX.length+command.length);
 			//console.log(commandInutile);
+			message.content = message.content.substring(8);
 			message.pin();
 		}
 		
