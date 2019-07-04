@@ -8,8 +8,8 @@ const { Agenda } = require('./dbObjects');
 const PREFIX = 'amb ';
 
 client.once('ready', () => {
-	Horodateur.sync({ 
-		//force: true 
+	Agenda.sync({ 
+		force: true 
 	})
 	console.log(`Logged in as ${client.user.tag}!`);
 });
@@ -28,7 +28,7 @@ client.on('message', async message => {
 			
 		}
 	}
-}
+});
 
 
 client.login('NTk2MzAzNjQ1MjY0NDQ1NDQx.XR3lFQ.M0-PZMILXofJCP3vaSCrA5M1erA');
