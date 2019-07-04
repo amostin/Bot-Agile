@@ -25,20 +25,21 @@ client.on('message', async message => {
 		
 		else if (command === 'agenda'){
 			//amb agenda <inscription 2d sess> <110820192359> <eperso>
+			const commentaire = input.slice(3).join(' ');
 			const ligneTab = await Agenda.create({
 				sujet: input[0],
 				date: input[1],
 				lieu: input[2],
-				comment: input[3],
+				comment: commentaire,
 			}).then(message.channel.send(`ligne ajoutée a agenda: ${input[0]} ${input[1]} ${input[2]}`));
 		}
 		
 		else if (command === 'comment') {
 			//amb comment idRdv comentaire
 			
-			const affectedRows = await Horodateur.update({ matiere: matiereName }, { where: { id: id } });
-			const ligneTabModif = await Agenda.update({ comment: commandArgs }, { where: { id: id } })
-			.then(message.channel.send(`ligne ${input[0]} commentée:  ${commandArgs}`));
+			const ligneTabModif = await Agenda.update({ comment: commandArgs }, { where: { id: input[0] } })
+			.then(message.channel.send(`ligne ${input[0]} commentée:  ${commandArgs}`))
+			.catch(console.error);
 		}
 		
 		else if (command === 'montreagenda') {
