@@ -22,9 +22,13 @@ client.once('ready', () => {
 	})
 	//statistique.array();
 
-const statistique =  Daily_scrum.findAll();
-statistique.forEach(b => todoCol.set(b.id, b.ajd));
-todoCol.forEach((value, key, map) => console.log(`m[${key}] = ${value}`));
+	const statistique =  Daily_scrum.findAll();
+	statistique.map(b => {
+		todoCol.set(b.id, b.ajd);
+		console.log(todoCol.get(b.id));
+	});
+	console.log(todoCol);
+	//todoCol.forEach((value, key, map) => console.log(`m[${key}] = ${value}`)));
 	console.log(`Logged in as ${client.user.tag}!`);
 });
 
@@ -34,6 +38,7 @@ client.on('message', async message => {
 		const command = input.shift();
 		const commandArgs = input.join(' ');
 		if (command === 'tchaud') { //amb tchaud
+			
 			message.reply('Oooh yeah ch\'ui bouillant !!');
 		}
 		
