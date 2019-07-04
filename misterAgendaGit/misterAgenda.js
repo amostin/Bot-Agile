@@ -35,9 +35,10 @@ client.on('message', async message => {
 		
 		else if (command === 'comment') {
 			//amb comment idRdv comentaire
+			
 			const affectedRows = await Horodateur.update({ matiere: matiereName }, { where: { id: id } });
-			const ligneTabModif = await Agenda.update({ comment: input[1] }, { where: { id: id } })
-			.then(message.channel.send(`ligne ${input[0]} commentée:  ${input[1]}`));
+			const ligneTabModif = await Agenda.update({ comment: commandArgs }, { where: { id: id } })
+			.then(message.channel.send(`ligne ${input[0]} commentée:  ${commandArgs}`));
 		}
 		
 		else if (command === 'montreagenda') {
