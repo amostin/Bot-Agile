@@ -27,7 +27,7 @@ client.on('message', async message => {
 			//amb agenda <inscription 2d sess> <110820192359> <eperso>
 			
 		
-			var ligneTab = await Daily_scrum.create({
+			var ligneTab = await Agenda.create({
 				sujet: input[0],
 				date: input[1],
 				lieu: input[2],
