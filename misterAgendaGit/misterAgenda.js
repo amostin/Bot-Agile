@@ -27,6 +27,24 @@ client.on('message', async message => {
 			//amb agenda <inscription 2d sess> <110820192359> <eperso>
 			
 		}
+		
+		else if (command === 'montreagenda') {
+			console.log('ok montreagenda');
+			const agendaList = await Agenda.findAll();
+			if(agendaList){
+				console.log('agendalist crée');
+				const idString = agendaList.map(t => t.id).join(', ') || 'No tags set.';
+				const sujetString = agendaList.map(t => t.sujet).join(', ') || 'No tags set.';
+				const dateString = agendaList.map(t => t.date).join(', ') || 'No tags set.';
+				const lieuString = agendaList.map(t => t.lieu).join(', ') || 'No tags set.';
+				const commentString = agendaList.map(t => t.comment).join(', ') || 'No tags set.';
+				const createdAtString = agendaList.map(t => t.createdAt.toString().substring(4, 24)).join(', ') || 'No tags set.';
+				const updatedAtString = agendaList.map(t => t.updatedAt.toString().substring(4, 24)).join(', ') || 'No tags set.';			
+				
+				return message.channel.send(`List of id: ${idString} \n List of sujet: ${sujetString} \n List of date: ${dateString} \n List of lieu: ${lieuString} \n  List of comment: ${commentString} \n List of creation: ${createdAtString} \n List of update: ${updatedAtString} \n `);
+			}
+			else return message.channel.send(`On dirait que la BDD est vide Patron!`);
+		}
 	}
 });
 
