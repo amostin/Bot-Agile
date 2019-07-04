@@ -8,7 +8,7 @@ const { Daily_scrum } = require('./dbObjects');
 const { Horodateur } = require('../mostinGuide/dbObjects');
 //collection pour stocker todo
 const todoColl = new Discord.Collection();
-
+todoColl.array();
 var ajdString;
 
 const PREFIX = 'amb ';
@@ -16,7 +16,7 @@ var stat = new Object();
 
 client.once('ready', () => {
 	Daily_scrum.sync({ 
-		//force: true 
+		force: true 
 	})
 	console.log(`Logged in as ${client.user.tag}!`);
 });
@@ -96,11 +96,21 @@ client.on('message', async message => {
 		}
 		
 		else if (command === "fini"){
+			
+			
 			const todoTab = ajdString.split('\n');
 			console.log(todoTab);
-			//console.log(Daily_scrum.sequelize);
+			message.channel.send(`amb pin 👍 ${todoTab[commandArgs]}`);
+			const ligneModif = await Daily_scrum.update({ ajd: `amb pin 👍 ${todoTab[commandArgs]}` }, { where: { id: (commandArgs+1) } });
+			ligneModif.map((t, i) => console.log(t));
 			
 			/*
+			
+			//console.log(Daily_scrum.sequelize);
+			
+			console.log(todoColl.get(1));
+			message.channel.send(`amb pin 👍 ${todoColl.get(commandArgs)}`);
+			
 			Daily_scrum.sequelize.query("SELECT * FROM daily_scrum", { type: Daily_scrum.sequelize.QueryTypes.SELECT})
 			  .then(users => { 
 				console.log('yoooo');
@@ -423,4 +433,3 @@ client.login('NTk0OTk5MDgxMDA5NDE0MTUw.XRkmHg.aa8u5sd1QhBP693Ln5r-Lf_t9ck');
 				message.channel.send(`amb pin \n ${contentUtileSansFut}`);
 			});
 			*/
-*/
