@@ -5,19 +5,26 @@ const Discord = require('discord.js');
 const fs = require("fs");
 const client = new Discord.Client();
 const { Daily_scrum } = require('./dbObjects');
-const { Horodateur } = require('../mostinGuide/dbObjects');
+//const { Horodateur } = require('../mostinGuide/dbObjects');
 //collection pour stocker todo
-const todoColl = new Discord.Collection();
-todoColl.array();
+const todoCol = new Discord.Collection();
+
+
 var ajdString;
 
 const PREFIX = 'amb ';
+// cet objet contient {finTodo: date, logGlobal: date}
 var stat = new Object();
 
 client.once('ready', () => {
 	Daily_scrum.sync({ 
-		force: true 
+		//force: true 
 	})
+	//statistique.array();
+
+const statistique =  Daily_scrum.findAll();
+statistique.forEach(b => todoCol.set(b.id, b.ajd));
+todoCol.forEach((value, key, map) => console.log(`m[${key}] = ${value}`));
 	console.log(`Logged in as ${client.user.tag}!`);
 });
 
@@ -44,7 +51,6 @@ client.on('message', async message => {
 			}
 			fs.writeFile("./rapportLog.txt", rapportTotal,  function (err) {
 																  if (err) throw err;
-																	
 																	console.log('rapport loggé!');
 																});	
 			let todoList = `\n\n Le ${parseJour(date.getDay())} ${date.getDate()} ${parseMois(date.getMonth())} ${date.getFullYear()} ${rapportTab[2]}`;
@@ -86,12 +92,12 @@ client.on('message', async message => {
 		else if (command === "todolist"){
 			
 			const ajd = await Daily_scrum.findAll({ attributes: ['ajd'] });
-			ajd.map((t, i) => todoColl.set(i, t.ajd));
-			console.log(todoColl.get(1));
+			ajd.map((t, i) => todoCol.set(i, t.ajd));
+			console.log(todoCol.get(1));
 			ajdString = ajd.map((t, i) => i + ': ' +t.ajd).join('\n');
 			
-			//console.log(ajdString);
-			ajdString.length > 1 ? message.channel.send(`amb pin \n${ajdString}`) : message.reply('Je n\'ai pas su trouver de tache dans la bdd. Excusez moi monsieur.');
+			
+			//ajdString.length > 1 ? message.channel.send(`amb pin \n${ajdString}`) : message.reply('Je n\'ai pas su trouver de tache dans la bdd. Excusez moi monsieur.');
 
 		}
 		
@@ -104,12 +110,13 @@ client.on('message', async message => {
 			const ligneModif = await Daily_scrum.update({ ajd: `amb pin 👍 ${todoTab[commandArgs]}` }, { where: { id: (commandArgs+1) } });
 			ligneModif.map((t, i) => console.log(t));
 			
+
 			/*
 			
 			//console.log(Daily_scrum.sequelize);
 			
-			console.log(todoColl.get(1));
-			message.channel.send(`amb pin 👍 ${todoColl.get(commandArgs)}`);
+			console.log(statistique.get(1));
+			message.channel.send(`amb pin 👍 ${statistique.get(commandArgs)}`);
 			
 			Daily_scrum.sequelize.query("SELECT * FROM daily_scrum", { type: Daily_scrum.sequelize.QueryTypes.SELECT})
 			  .then(users => { 
