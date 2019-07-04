@@ -97,12 +97,13 @@ client.on('message', async message => {
 		else if (command === "todolist"){
 			
 			const ajd = await Daily_scrum.findAll({ attributes: ['ajd'] });
-			ajd.map((t, i) => todoCol.set(i, t.ajd));
-			console.log(todoCol.get(1));
-			ajdString = ajd.map((t, i) => i + ': ' +t.ajd).join('\n');
+			//ajd.map((t, i) => todoCol.set(i, t.ajd));
+			//console.log(todoCol.get(1));
+			//ajdString = ajd.map((t, i) => i + ': ' +t.ajd).join('\n');
+			ajdString = todoCol.map((t, i) => `${i}: ${todoCol.get(i)}`).join('\n');
+
 			
-			
-			//ajdString.length > 1 ? message.channel.send(`amb pin \n${ajdString}`) : message.reply('Je n\'ai pas su trouver de tache dans la bdd. Excusez moi monsieur.');
+			ajdString.length > 1 ? message.channel.send(`amb pin \n${ajdString}`) : message.reply('Je n\'ai pas su trouver de tache dans la bdd. Excusez moi monsieur.');
 
 		}
 		
