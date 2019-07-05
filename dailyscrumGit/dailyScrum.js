@@ -160,9 +160,9 @@ client.on('message', async message => {
 				
 				message.reply('BRAVO ! TU AS FINI une TACHES POUR AUJOURDHUI !!\n Tu vas recevoir un badge avec le moment où ça à été fait pour qu\'on puisse voir si t\'es endurant');
 					//let date = new Date();
-					idAjd.get(updatedAt.toString().substring(0, 25));
-					console.log(idAjd);
-					message.channel.send('amb build '+ idAjd.get(updatedAt.toString().substring(0, 25)));
+					const todoDone = ajdUp.get(done.toString().substring(0, 25));
+					console.log(ajdUp);
+					message.channel.send('amb build '+ todoDone);
 				
 			/*
 			t.createdAt.toString().substring(4, 24))
