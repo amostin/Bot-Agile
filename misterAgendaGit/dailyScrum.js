@@ -114,6 +114,14 @@ client.on('message', async message => {
 		}
 		
 		else if (command === "todolist"){
+			
+			return message.channel.send(
+				idAjd.map((ajdTache, position) => `amb pin ${position}: ${(ajdTache)}💰`)
+					.join('\n'),
+				{ code: true }
+			);
+			
+			/*
 			let todoListTab = [];
 			const listDailyScrum =  Daily_scrum.findAll();
 				listDailyScrum.map((b, i) => {
@@ -121,8 +129,16 @@ client.on('message', async message => {
 					console.log('apres lajout de idAjd.get(b.id): ' + todoListTab[i]);
 				});
 				
-			const todoListString = todoListTab.map((val, i, tab) => `${i}: ${val}`).join('\n');
-			message.channel.send(`amb pin \n${todoList}`);// : message.reply('Je n\'ai pas su trouver de tache dans la bdd. Excusez moi monsieur.');
+				let todoListString = "";
+				for(let i = 0; i<todoListTab; i++){
+					//todoListString += `${i}: ${todoListTab[i]}\n`;
+					console.log(todoListString[i]);
+				}
+				*/
+				//console.log(todoListString);
+			//const todoListString = todoListTab.join('\n');
+			//message.channel.send(todoListTab[0].toString());
+			//message.channel.send(`amb pin \n${todoListString}`);// : message.reply('Je n\'ai pas su trouver de tache dans la bdd. Excusez moi monsieur.');
 
 		}
 		
