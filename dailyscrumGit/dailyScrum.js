@@ -19,7 +19,7 @@ const PREFIX = 'amb ';
 
 client.once('ready', () => {
 	Daily_scrum.sync({ 
-		force: true 
+		//force: true 
 	})
 	//listDailyScrum.array();
 
@@ -107,26 +107,39 @@ client.on('message', async message => {
 					idAjd.set(b.id, b.ajd);
 					console.log('apres lajout du rapport, ajd: ' + idAjd.get(b.id));
 				});
+				/*
 				listDailyScrum.map(b => {
 					todoCreUp.set(b.createdAt.getTime(), b.updatedAt.getTime());
 					console.log('apres lajout du rapport, updatedAt: ' + todoCreUp.get(b.updatedAt.getTime()));
 				});
+				*/
 		}
 		
 		else if (command === "todolist"){
+			
+			return message.channel.send(
+				idAjd.map((ajdTache, position) => `amb pin ${position}: ${(ajdTache)}💰`)
+					.join('\n'),
+				//{ code: true }
+			);
+			
+			/*
 			let todoListTab = [];
 			const listDailyScrum =  Daily_scrum.findAll();
 				listDailyScrum.map((b, i) => {
 					todoListTab.push(idAjd.get(b.id));
 					console.log('apres lajout de idAjd.get(b.id): ' + todoListTab[i]);
 				});
+				
 				let todoListString = "";
-				for(let i in todoListTab){
-					todoListString += `${i}: ${todoListTab[i]}\n`;
+				for(let i = 0; i<todoListTab; i++){
+					//todoListString += `${i}: ${todoListTab[i]}\n`;
+					console.log(todoListString[i]);
 				}
-				console.log(todoListString);
-			//const todoListString = todoListTab.map((val, i, tab) => `${i}: ${val} \n`);
-			
+				*/
+				//console.log(todoListString);
+			//const todoListString = todoListTab.join('\n');
+			//message.channel.send(todoListTab[0].toString());
 			//message.channel.send(`amb pin \n${todoListString}`);// : message.reply('Je n\'ai pas su trouver de tache dans la bdd. Excusez moi monsieur.');
 
 		}
@@ -139,6 +152,13 @@ client.on('message', async message => {
 				.then(message.channel.send(`amb pin 👍 ${done}`))
 				.catch(console.log('wtf'));
 			console.log(commandArgs);
+			/*
+			
+			listDailyScrum.map(b => {
+					todoCreUp.set(b.createdAt.getTime(), b.updatedAt.getTime());
+					console.log('apres lajout du rapport, updatedAt: ' + todoCreUp.get(b.updatedAt.getTime()));
+				});
+			
 			
 			const listDailyScrum =  Daily_scrum.findAll();
 			let arrayDone = [];
