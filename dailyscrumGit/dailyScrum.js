@@ -108,12 +108,10 @@ client.on('message', async message => {
 		}
 		
 		else if (command === "fini"){
-			
-			
-			const todoTab = ajdString.split('\n');
-			console.log(todoTab);
-			message.channel.send(`amb pin 👍 ${todoTab[commandArgs]}`);
-			const ligneModif = await Daily_scrum.update({ ajd: `amb pin 👍 ${todoTab[commandArgs]}` }, { where: { id: (commandArgs+1) } });
+			//const todoTab = ajdString.split('\n');
+			//console.log(todoTab);
+			message.channel.send(`amb pin 👍 ${todoCol.get(commandArgs)}`);
+			const ligneModif = await Daily_scrum.update({ ajd: `👍 ${todoCol.get(commandArgs)}` }, { where: { id: (commandArgs+1) } });
 			ligneModif.map((t, i) => console.log(t));
 			
 
