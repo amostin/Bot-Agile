@@ -8,9 +8,8 @@ const { Daily_scrum } = require('./dbObjects');
 //const { Horodateur } = require('../mostinGuide/dbObjects');
 //collection pour stocker todo
 const idAjd = new Discord.Collection();
-const todoCreUp = new Discord.Collection();
-
-
+/const ajdUp = new Discord.Collection();
+const ajdUp = new Discord.Collection();
 //var ajdString;
 
 const PREFIX = 'amb ';
@@ -29,8 +28,8 @@ client.once('ready', () => {
 		console.log('initialisation de la coll avec la bdd, ajd: ' + idAjd.get(b.id));
 	});
 	listDailyScrum.map(b => {
-		todoCreUp.set(Date(b.createdAt.getTime()), Date(b.updatedAt.getTime()));
-		console.log('initialisation de la coll avec la bdd, createdat: ' + todoCreUp.get(b.createdAt.getTime()));
+		ajdUp.set(b.ajd, Date(b.updatedAt.getTime()));
+		console.log('initialisation de la coll avec la bdd, createdat: ' + ajdUp.get(b.createdAt.getTime()));
 	});
 	
 	//idAjd.map(val => console.log(val.id));
@@ -109,8 +108,8 @@ client.on('message', async message => {
 				});
 				/*
 				listDailyScrum.map(b => {
-					todoCreUp.set(b.createdAt.getTime(), b.updatedAt.getTime());
-					console.log('apres lajout du rapport, updatedAt: ' + todoCreUp.get(b.updatedAt.getTime()));
+					ajdUp.set(b.ajd, b.updatedAt.getTime());
+					console.log('apres lajout du rapport, updatedAt: ' + ajdUp.get(b.updatedAt.getTime()));
 				});
 				*/
 		}
@@ -152,11 +151,18 @@ client.on('message', async message => {
 				.then(message.channel.send(`amb pin 👍 ${done}`))
 				.catch(console.log('wtf'));
 			console.log(commandArgs);
+			
+			const listDailyScrum =  Daily_scrum.findAll();
+				listDailyScrum.map(b => {
+					ajdUp.set(b.ajd, b.updatedAt);
+					console.log('apres la commande fini, update: ' + idAjd.get(b.updatedAt.getTime()));
+				});
+				
 			/*
 			
 			listDailyScrum.map(b => {
-					todoCreUp.set(b.createdAt.getTime(), b.updatedAt.getTime());
-					console.log('apres lajout du rapport, updatedAt: ' + todoCreUp.get(b.updatedAt.getTime()));
+					ajdUp.set(b.createdAt.getTime(), b.updatedAt.getTime());
+					console.log('apres lajout du rapport, updatedAt: ' + ajdUp.get(b.updatedAt.getTime()));
 				});
 			
 			
@@ -190,8 +196,8 @@ client.on('message', async message => {
 			
 			/*
 			listDailyScrum.map(b => {
-					todoCreUp.set(b.createdAt.getTime(), b.updatedAt.getTime());
-					console.log('apres lajout de b.createdAt.getTime(): ' + todoCreUp.get(b.updatedAt.getTime()));
+					ajdUp.set(b.createdAt.getTime(), b.updatedAt.getTime());
+					console.log('apres lajout de b.createdAt.getTime(): ' + ajdUp.get(b.updatedAt.getTime()));
 				});
 			
 			//console.log(Daily_scrum.sequelize);
