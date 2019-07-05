@@ -18,7 +18,7 @@ const PREFIX = 'amb ';
 
 client.once('ready', () => {
 	Daily_scrum.sync({ 
-		force: true 
+		//force: true 
 	})
 	//listDailyScrum.array();
 
@@ -175,7 +175,7 @@ client.on('message', async message => {
 			let statLogTemp = message;
 			console.log(statLogTemp);
 			//le premier elem du tabLog sera tj le log logGlobal
-			logGlobal.finTache = statLogTemp.content.substring(7, 44);
+			logGlobal.set('finTache', statLogTemp.content.substring(7, 44));
 			console.log(logGlobal);
 			message.channel.send('amb myspace');
 		}
@@ -195,7 +195,7 @@ client.on('message', async message => {
 			//.setAuthor('Je suis l\'auteur de ce paradis', 'https://i.imgur.com/wSTFkRM.png', 'https://discord.js.org')
 			.setDescription('Nous voici face a ton espace de satisfaction. \n Ici tu as accès à toute les stats dispo pour prendre conscience du chemin parcouru.')
 			//.setThumbnail('https://i.imgur.com/wSTFkRM.png')
-			.addField('Temps de connexion total: ', `${logGlobal.finTache}`)
+			.addField('Temps de connexion total: ', `${logGlobal.get('finTache')}`)
 			//.addBlankField()
 			//`${ajdUp.get(done.toString().substring(0, 25))}`, 
 			.addField('moment où tu as réussis à finir tes taches quotidiennes', 'yo', true)
