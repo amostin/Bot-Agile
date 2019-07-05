@@ -10,20 +10,20 @@ const { Daily_scrum } = require('./dbObjects');
 const todoCol = new Discord.Collection();
 
 
-var ajdString;
+//var ajdString;
 
 const PREFIX = 'amb ';
 // cet objet contient {finTodo: date, logGlobal: date}
-var stat = new Object();
+//var stat = new Object();
 
 client.once('ready', () => {
 	Daily_scrum.sync({ 
 		//force: true 
 	})
-	//statistique.array();
+	//listDailyScrum.array();
 
-	const statistique =  Daily_scrum.findAll();
-	statistique.map(b => {
+	const listDailyScrum =  Daily_scrum.findAll();
+	listDailyScrum.map(b => {
 		todoCol.set(b.id, b.ajd);
 		console.log(todoCol.get(b.id));
 	});
@@ -90,19 +90,24 @@ client.on('message', async message => {
 					hier: hierBdd[i],
 					ajd: ajdBdd[i],
 					blocke: blockeBdd[i],
-				}).then((i === (nbreLigneMax - 1)) ? message.channel.send('amb todolist ') : console.log('la bdd se rempli hier, ajd, blcke'));
+				}).then((i === (nbreLigneMax - 1)) ? message.channel.send('amb todolist') : console.log('la bdd se rempli hier, ajd, blcke'));
 			}
+			
+				const listDailyScrum =  Daily_scrum.findAll();
+				listDailyScrum.map(b => {
+					todoCol.set(b.id, b.ajd);
+					console.log(todoCol.get(b.id));
+				});
 		}
 		
 		else if (command === "todolist"){
 			
-			const ajd = await Daily_scrum.findAll({ attributes: ['ajd'] });
+			//const ajd = await Daily_scrum.findAll({ attributes: ['ajd'] });
 			//ajd.map((t, i) => todoCol.set(i, t.ajd));
 			//console.log(todoCol.get(1));
 			//ajdString = ajd.map((t, i) => i + ': ' +t.ajd).join('\n');
 			ajdString = todoCol.map((t, i) => `${i}: ${todoCol.get(i)}`).join('\n');
 
-			
 			ajdString.length > 1 ? message.channel.send(`amb pin \n${ajdString}`) : message.reply('Je n\'ai pas su trouver de tache dans la bdd. Excusez moi monsieur.');
 
 		}
@@ -110,17 +115,24 @@ client.on('message', async message => {
 		else if (command === "fini"){
 			//const todoTab = ajdString.split('\n');
 			//console.log(todoTab);
-			message.channel.send(`amb pin 👍 ${todoCol.get(commandArgs)}`);
-			const ligneModif = await Daily_scrum.update({ ajd: `👍 ${todoCol.get(commandArgs)}` }, { where: { id: (commandArgs+1) } });
-			ligneModif.map((t, i) => console.log(t));
+			const done = todoCol.get(parseInt(commandArgs));
+			const ligneModif = await Daily_scrum.update({ ajd: `👍 ${done}` }, { where: { id: commandArgs } })
+				.then(message.channel.send(`amb pin 👍 ${done}`))
+				.catch(console.log('wtf'));
+			console.log(commandArgs);
 			
+			const listDailyScrum =  Daily_scrum.findAll();
+				listDailyScrum.map(b => {
+					todoCol.set(b.id, b.ajd);
+					console.log(todoCol.get(b.id));
+				});
 
 			/*
 			
 			//console.log(Daily_scrum.sequelize);
 			
-			console.log(statistique.get(1));
-			message.channel.send(`amb pin 👍 ${statistique.get(commandArgs)}`);
+			console.log(listDailyScrum.get(1));
+			message.channel.send(`amb pin 👍 ${listDailyScrum.get(commandArgs)}`);
 			
 			Daily_scrum.sequelize.query("SELECT * FROM daily_scrum", { type: Daily_scrum.sequelize.QueryTypes.SELECT})
 			  .then(users => { 
