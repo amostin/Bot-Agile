@@ -19,18 +19,18 @@ const PREFIX = 'amb ';
 
 client.once('ready', () => {
 	Daily_scrum.sync({ 
-		//force: true 
+		force: true 
 	})
 	//listDailyScrum.array();
 
 	const listDailyScrum =  Daily_scrum.findAll();
 	listDailyScrum.map(b => {
 		idAjd.set(b.id, b.ajd);
-		console.log('initialisation de la coll avec la bdd: ' + idAjd.get(b.id));
+		console.log('initialisation de la coll avec la bdd, ajd: ' + idAjd.get(b.id));
 	});
 	listDailyScrum.map(b => {
-		idAjd.set(b.createdAt.getTime(), b.updatedAt.getTime());
-		console.log('initialisation de la coll avec la bdd: ' + idAjd.get(b.updatedAt));
+		todoCreUp.set(Date(b.createdAt.getTime()), Date(b.updatedAt.getTime()));
+		console.log('initialisation de la coll avec la bdd, createdat: ' + todoCreUp.get(b.createdAt.getTime()));
 	});
 	
 	//idAjd.map(val => console.log(val.id));
@@ -105,36 +105,29 @@ client.on('message', async message => {
 				const listDailyScrum =  Daily_scrum.findAll();
 				listDailyScrum.map(b => {
 					idAjd.set(b.id, b.ajd);
-					console.log('apres lajout du rapport: ' + idAjd.get(b.id));
+					console.log('apres lajout du rapport, ajd: ' + idAjd.get(b.id));
+				});
+				listDailyScrum.map(b => {
+					todoCreUp.set(b.createdAt.getTime(), b.updatedAt.getTime());
+					console.log('apres lajout du rapport, updatedAt: ' + todoCreUp.get(b.updatedAt.getTime()));
 				});
 		}
 		
 		else if (command === "todolist"){
+			let todoListTab = [];
+			const listDailyScrum =  Daily_scrum.findAll();
+				listDailyScrum.map((b, i) => {
+					todoListTab.push(idAjd.get(b.id));
+					console.log('apres lajout de idAjd.get(b.id): ' + todoListTab[i]);
+				});
+				let todoListString = "";
+				for(let i in todoListTab){
+					todoListString += `${i}: ${todoListTab[i]}\n`;
+				}
+				console.log(todoListString);
+			//const todoListString = todoListTab.map((val, i, tab) => `${i}: ${val} \n`);
 			
-			//const ajd = await Daily_scrum.findAll({ attributes: ['ajd'] });
-			//ajd.map((t, i) => idAjd.set(i, t.ajd));
-			//console.log(idAjd.get(1));
-			//ajdString = ajd.map((t, i) => i + ': ' +t.ajd).join('\n');
-			/*
-				id = 3
-				hier = Update
-				ajd = Voir ce qui manque dans la première version
-				blocke = nada
-				createdAt = 1562320985727
-				updatedAt = 1562320985727
-				
-				idAjd.forEach((valeur, clé) => {
-			  console.log(clé + " = " + valeur);
-			});
-			*/
-
-			
-			
-			//const ajdString = idAjd.map((t, i) => `${i}: ${t}`).join('\n');
-			//const ajdString = idAjd.map((t, i) => `${t}: ${i}`).join('\n');
-			//console.log(ajdString);
-			//const ajdString = idAjd.map((t, i) => `${t}: ${i}`).join('\n');
-			//ajdString.length > 1 ? message.channel.send(`amb pin \n${ajdString}`) : message.reply('Je n\'ai pas su trouver de tache dans la bdd. Excusez moi monsieur.');
+			//message.channel.send(`amb pin \n${todoListString}`);// : message.reply('Je n\'ai pas su trouver de tache dans la bdd. Excusez moi monsieur.');
 
 		}
 		
@@ -176,6 +169,10 @@ client.on('message', async message => {
 			}
 			
 			/*
+			listDailyScrum.map(b => {
+					todoCreUp.set(b.createdAt.getTime(), b.updatedAt.getTime());
+					console.log('apres lajout de b.createdAt.getTime(): ' + todoCreUp.get(b.updatedAt.getTime()));
+				});
 			
 			//console.log(Daily_scrum.sequelize);
 			
