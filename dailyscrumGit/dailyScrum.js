@@ -7,7 +7,8 @@ const client = new Discord.Client();
 const { Daily_scrum } = require('./dbObjects');
 //const { Horodateur } = require('../mostinGuide/dbObjects');
 //collection pour stocker todo
-const todoCol = new Discord.Collection();
+const idAjd = new Discord.Collection();
+const todoCreUp = new Discord.Collection();
 
 
 //var ajdString;
@@ -24,17 +25,19 @@ client.once('ready', () => {
 
 	const listDailyScrum =  Daily_scrum.findAll();
 	listDailyScrum.map(b => {
-		todoCol.set('id', b.id);
-		todoCol.set('hier', b.hier);
-		todoCol.set('ajd', b.ajd);
-		todoCol.set('blocke', b.blocke);
-		todoCol.set('createdAt', b.createdAt.getTime());
-		todoCol.set('updatedAt', b.updatedAt.getTime());
-		console.log(todoCol.get('blocke'));
+		idAjd.set(b.id, b.ajd);
+		console.log('initialisation de la coll avec la bdd: ' + idAjd.get(b.id));
 	});
-	//console.log(todoCol+'fin todocol\n');
+	listDailyScrum.map(b => {
+		idAjd.set(b.createdAt.getTime(), b.updatedAt.getTime());
+		console.log('initialisation de la coll avec la bdd: ' + idAjd.get(b.updatedAt));
+	});
+	
+	//idAjd.map(val => console.log(val.id));
+	
+	//console.log(idAjd+'fin idAjd\n');
 	//console.log(listDailyScrum);
-	//todoCol.forEach((value, key, map) => console.log(`m[${key}] = ${value}`)));
+	//idAjd.forEach((value, key, map) => console.log(`m[${key}] = ${value}`)));
 	console.log(`Logged in as ${client.user.tag}!`);
 });
 
@@ -62,7 +65,7 @@ client.on('message', async message => {
 			}
 			fs.writeFile("./rapportLog.txt", rapportTotal,  function (err) {
 																  if (err) throw err;
-																	console.log('rapport loggé!');
+																	//console.log('rapport loggé!');
 																});	
 			let todoList = `\n\n Le ${parseJour(date.getDay())} ${date.getDate()} ${parseMois(date.getMonth())} ${date.getFullYear()} ${rapportTab[2]}`;
 			//.getDate().getMonth().getFullYear()
@@ -73,7 +76,7 @@ client.on('message', async message => {
 			todoList = todoList.substring(0, (longTodoList-25));
 			fs.writeFile("./todoLog.txt", todoList,  function (err) {
 														  if (err) throw err;
-															console.log('todo list maj!');
+															//console.log('todo list maj!');
 														});
 														
 														
@@ -101,32 +104,44 @@ client.on('message', async message => {
 			
 				const listDailyScrum =  Daily_scrum.findAll();
 				listDailyScrum.map(b => {
-					todoCol.set('id', b.id);
-					todoCol.set('hier', b.hier);
-					todoCol.set('ajd', b.ajd);
-					todoCol.set('blocke', b.blocke);
-					todoCol.set('createdAt', b.createdAt.getTime());
-					todoCol.set('updatedAt', b.updatedAt.getTime());
-					console.log(todoCol.get('blocke'));
+					idAjd.set(b.id, b.ajd);
+					console.log('apres lajout du rapport: ' + idAjd.get(b.id));
 				});
 		}
 		
 		else if (command === "todolist"){
 			
 			//const ajd = await Daily_scrum.findAll({ attributes: ['ajd'] });
-			//ajd.map((t, i) => todoCol.set(i, t.ajd));
-			//console.log(todoCol.get(1));
+			//ajd.map((t, i) => idAjd.set(i, t.ajd));
+			//console.log(idAjd.get(1));
 			//ajdString = ajd.map((t, i) => i + ': ' +t.ajd).join('\n');
-			ajdString = todoCol.map((t, i) => `${i}: ${todoCol.get(i)}`).join('\n');
+			/*
+				id = 3
+				hier = Update
+				ajd = Voir ce qui manque dans la première version
+				blocke = nada
+				createdAt = 1562320985727
+				updatedAt = 1562320985727
+				
+				idAjd.forEach((valeur, clé) => {
+			  console.log(clé + " = " + valeur);
+			});
+			*/
 
-			ajdString.length > 1 ? message.channel.send(`amb pin \n${ajdString}`) : message.reply('Je n\'ai pas su trouver de tache dans la bdd. Excusez moi monsieur.');
+			
+			
+			//const ajdString = idAjd.map((t, i) => `${i}: ${t}`).join('\n');
+			//const ajdString = idAjd.map((t, i) => `${t}: ${i}`).join('\n');
+			//console.log(ajdString);
+			//const ajdString = idAjd.map((t, i) => `${t}: ${i}`).join('\n');
+			//ajdString.length > 1 ? message.channel.send(`amb pin \n${ajdString}`) : message.reply('Je n\'ai pas su trouver de tache dans la bdd. Excusez moi monsieur.');
 
 		}
 		
 		else if (command === "fini"){
 			//const todoTab = ajdString.split('\n');
 			//console.log(todoTab);
-			const done = todoCol.get(parseInt(commandArgs));
+			const done = idAjd.get(parseInt(commandArgs));
 			const ligneModif = await Daily_scrum.update({ ajd: `👍 ${done}` }, { where: { id: commandArgs } })
 				.then(message.channel.send(`amb pin 👍 ${done}`))
 				.catch(console.log('wtf'));
@@ -136,17 +151,17 @@ client.on('message', async message => {
 			let arrayDone = [];
 			let arrayDoneJour =[];
 			listDailyScrum.map(b => {
-				todoCol.set('id', b.id);
-				todoCol.set('hier', b.hier);
-				todoCol.set('ajd', b.ajd);
-				todoCol.set('blocke', b.blocke);
-				todoCol.set('createdAt', b.createdAt.getTime());
-				todoCol.set('updatedAt', b.updatedAt.getTime());
-				console.log(todoCol.get('createdAt'));
-				if(todoCol.get(createdAt) !== todoCol.get(updatedAt)){
-					arrayDone.push(todoCol.get(updatedAt));
-					if(Date(todoCol.get(createdAt).toString().substring(0, 15)) === Date(Date.now()).toString().substring(0, 15)){
-						arrayDoneJour.push(todoCol.get(updatedAt));
+				idAjd.set('id', b.id);
+				idAjd.set('hier', b.hier);
+				idAjd.set('ajd', b.ajd);
+				idAjd.set('blocke', b.blocke);
+				idAjd.set('createdAt', b.createdAt.getTime());
+				idAjd.set('updatedAt', b.updatedAt.getTime());
+				console.log(idAjd.get('createdAt'));
+				if(idAjd.get(createdAt) !== idAjd.get(updatedAt)){
+					arrayDone.push(idAjd.get(updatedAt));
+					if(Date(idAjd.get(createdAt).toString().substring(0, 15)) === Date(Date.now()).toString().substring(0, 15)){
+						arrayDoneJour.push(idAjd.get(updatedAt));
 					}
 				}
 			});
@@ -155,9 +170,9 @@ client.on('message', async message => {
 					console.log(arrayDoneJour.length); 
 					message.reply('BRAVO ! TU AS FINI TES TACHES POUR AUJOURDHUI !!\n Tu vas recevoir un badge avec le jour où ça à été fait pour qu\'on puisse voir si t\'es endurant');
 					let date = new Date();
-					todoCol.set('finTodoJournalier', date.toString().substring(0, 25));
-					console.log(todoCol);
-					message.channel.send('amb build '+ todoCol.get(finTodoJournalier));
+					idAjd.set('finTodoJournalier', date.toString().substring(0, 25));
+					console.log(idAjd);
+					message.channel.send('amb build '+ idAjd.get('finTodoJournalier'));
 			}
 			
 			/*
@@ -229,8 +244,8 @@ client.on('message', async message => {
 			let statLogTemp = message;
 			console.log(statLogTemp);
 			//le premier elem du tabLog sera tj le log logGlobal
-			stat.logGlobal = statLogTemp.content.substring(7, 44);
-			console.log(stat);
+			idAjd.finTodoJournalier = statLogTemp.content.substring(7, 44);
+			console.log(idAjd);
 			message.channel.send('amb myspace');
 		}
 		
@@ -249,16 +264,16 @@ client.on('message', async message => {
 			//.setAuthor('Je suis l\'auteur de ce paradis', 'https://i.imgur.com/wSTFkRM.png', 'https://discord.js.org')
 			.setDescription('Nous voici face a ton espace de satisfaction. \n Ici tu as accès à toute les stats dispo pour prendre conscience du chemin parcouru.')
 			//.setThumbnail('https://i.imgur.com/wSTFkRM.png')
-			.addField('Temps de connexion total: ', `${stat.logGlobal}`)
+			.addField('Temps de connexion total: ', `${idAjd.finTodoJournalier}`)
 			//.addBlankField()
-			.addField('moment où tu as réussis à finir tes taches quotidiennes', `${stat.finTodoJournalier}`, true)
+			.addField('moment où tu as réussis à finir tes taches quotidiennes', `${idAjd.finTodoJournalier}`, true)
 			.addField('Temps de connexion total par session', 'Some value here', true)
 			.addField('Inline field title', 'Some value here', true)
 			.setImage('https://i.imgur.com/wSTFkRM.png')
 			.setTimestamp()
 			.setFooter('Dernière connexion: ', 'https://i.imgur.com/wSTFkRM.png');
 		message.channel.send(exampleEmbed);
-		console.log(stat);
+		console.log(idAjd);
 		
 
 		const matiereList = await Daily_scrum.findAll();
@@ -300,12 +315,12 @@ function getRapportBdd(rapportTab, index, offset = 0){
 	const colonne = rapportTab[index].toString();
 	const longColonne = colonne.length;
 	const colonneString = colonne.substring(0, (longColonne-offset));
-	console.log(colonneString);
+	//console.log(colonneString);
 	const colonneTab = colonneString.split('\n');
-	console.log(colonneTab);
+	//console.log(colonneTab);
 	const colonneTabFiltr = colonneTab.filter(word => word.length > 1);
 	colonneTabFiltr.forEach( element => console.log(element));
-	console.log(colonneTabFiltr.length);
+	//console.log(colonneTabFiltr.length);
 	return colonneTabFiltr;
 }
 
