@@ -8,7 +8,7 @@ const { Daily_scrum } = require('./dbObjects');
 //const { Horodateur } = require('../mostinGuide/dbObjects');
 //collection pour stocker todo
 const idAjd = new Discord.Collection();
-/const ajdUp = new Discord.Collection();
+//const ajdUp = new Discord.Collection();
 const ajdUp = new Discord.Collection();
 //var ajdString;
 
@@ -28,7 +28,7 @@ client.once('ready', () => {
 		console.log('initialisation de la coll avec la bdd, ajd: ' + idAjd.get(b.id));
 	});
 	listDailyScrum.map(b => {
-		ajdUp.set(b.ajd, Date(b.updatedAt.getTime()));
+		ajdUp.set(b.ajd, b.updatedAt.getTime());
 		console.log('initialisation de la coll avec la bdd, createdat: ' + ajdUp.get(b.createdAt.getTime()));
 	});
 	
@@ -155,10 +155,17 @@ client.on('message', async message => {
 			const listDailyScrum =  Daily_scrum.findAll();
 				listDailyScrum.map(b => {
 					ajdUp.set(b.ajd, b.updatedAt);
-					console.log('apres la commande fini, update: ' + idAjd.get(b.updatedAt.getTime()));
+					console.log('(refresh collection ajdUp) apres la commande fini, update: ' + idAjd.get(b.updatedAt.getTime()));
 				});
 				
+				message.reply('BRAVO ! TU AS FINI une TACHES POUR AUJOURDHUI !!\n Tu vas recevoir un badge avec le moment où ça à été fait pour qu\'on puisse voir si t\'es endurant');
+					//let date = new Date();
+					idAjd.get(updatedAt.toString().substring(0, 25));
+					console.log(idAjd);
+					message.channel.send('amb build '+ idAjd.get(updatedAt.toString().substring(0, 25)));
+				
 			/*
+			t.createdAt.toString().substring(4, 24))
 			
 			listDailyScrum.map(b => {
 					ajdUp.set(b.createdAt.getTime(), b.updatedAt.getTime());
