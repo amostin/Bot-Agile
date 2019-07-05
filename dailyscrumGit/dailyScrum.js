@@ -24,7 +24,7 @@ client.once('ready', () => {
 
 	const listDailyScrum =  Daily_scrum.findAll();
 	listDailyScrum.map(b => {
-		todoCol.set('id', b.ajd);
+		todoCol.set('id', b.id);
 		todoCol.set('hier', b.hier);
 		todoCol.set('ajd', b.ajd);
 		todoCol.set('blocke', b.blocke);
@@ -101,7 +101,7 @@ client.on('message', async message => {
 			
 				const listDailyScrum =  Daily_scrum.findAll();
 				listDailyScrum.map(b => {
-					todoCol.set('id', b.ajd);
+					todoCol.set('id', b.id);
 					todoCol.set('hier', b.hier);
 					todoCol.set('ajd', b.ajd);
 					todoCol.set('blocke', b.blocke);
@@ -133,25 +133,33 @@ client.on('message', async message => {
 			console.log(commandArgs);
 			
 			const listDailyScrum =  Daily_scrum.findAll();
+			let arrayDone = [];
+			let arrayDoneJour =[];
 			listDailyScrum.map(b => {
-				todoCol.set('id', b.ajd);
+				todoCol.set('id', b.id);
 				todoCol.set('hier', b.hier);
 				todoCol.set('ajd', b.ajd);
 				todoCol.set('blocke', b.blocke);
 				todoCol.set('createdAt', b.createdAt.getTime());
 				todoCol.set('updatedAt', b.updatedAt.getTime());
 				console.log(todoCol.get('createdAt'));
-			});
-
-			listDailyScrum.forEach((val, cle) => {
-				if(listDailyScrum.createdAt !== listDailyScrum.updatedAt){
-					message.reply('BRAVO ! TU AS FINI TES TACHES POUR AUJOURDHUI !!\n Tu vas recevoir un badge avec le jour où ça à été fait pour qu\'on puisse voir si t\'es endurant');
-					let date = new Date();
-					stat.finTodoJournalier = date.toString().substring(0, 25);
-					console.log(stat);
-					message.channel.send('amb build '+ stat.finTodoJournalier);
+				if(todoCol.get(createdAt) !== todoCol.get(updatedAt)){
+					arrayDone.push(todoCol.get(updatedAt));
+					if(Date(todoCol.get(createdAt).toString().substring(0, 15)) === Date(Date.now()).toString().substring(0, 15)){
+						arrayDoneJour.push(todoCol.get(updatedAt));
+					}
 				}
 			});
+
+			if (arrayDoneJour.length === arrayDone.length){
+					console.log(arrayDoneJour.length); 
+					message.reply('BRAVO ! TU AS FINI TES TACHES POUR AUJOURDHUI !!\n Tu vas recevoir un badge avec le jour où ça à été fait pour qu\'on puisse voir si t\'es endurant');
+					let date = new Date();
+					todoCol.set('finTodoJournalier', date.toString().substring(0, 25));
+					console.log(todoCol);
+					message.channel.send('amb build '+ todoCol.get(finTodoJournalier));
+			}
+			
 			/*
 			
 			//console.log(Daily_scrum.sequelize);
