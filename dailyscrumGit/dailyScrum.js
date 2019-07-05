@@ -8,9 +8,9 @@ const { Daily_scrum } = require('./dbObjects');
 //const { Horodateur } = require('../mostinGuide/dbObjects');
 //collection pour stocker todo
 const idAjd = new Discord.Collection();
-//const ajdUp = new Discord.Collection();
 const ajdUp = new Discord.Collection();
-//var ajdString;
+const logGlobal = new Discord.Collection();
+
 
 const PREFIX = 'amb ';
 // cet objet contient {finTodo: date, logGlobal: date}
@@ -18,7 +18,7 @@ const PREFIX = 'amb ';
 
 client.once('ready', () => {
 	Daily_scrum.sync({ 
-		//force: true 
+		force: true 
 	})
 	//listDailyScrum.array();
 
@@ -163,110 +163,11 @@ client.on('message', async message => {
 					const todoDone = ajdUp.get(done.toString().substring(0, 25));
 					console.log(ajdUp);
 					message.channel.send('amb build '+ todoDone);
-				
-			/*
-			t.createdAt.toString().substring(4, 24))
-			
-			listDailyScrum.map(b => {
-					ajdUp.set(b.createdAt.getTime(), b.updatedAt.getTime());
-					console.log('apres lajout du rapport, updatedAt: ' + ajdUp.get(b.updatedAt.getTime()));
-				});
-			
-			
-			const listDailyScrum =  Daily_scrum.findAll();
-			let arrayDone = [];
-			let arrayDoneJour =[];
-			listDailyScrum.map(b => {
-				idAjd.set('id', b.id);
-				idAjd.set('hier', b.hier);
-				idAjd.set('ajd', b.ajd);
-				idAjd.set('blocke', b.blocke);
-				idAjd.set('createdAt', b.createdAt.getTime());
-				idAjd.set('updatedAt', b.updatedAt.getTime());
-				console.log(idAjd.get('createdAt'));
-				if(idAjd.get(createdAt) !== idAjd.get(updatedAt)){
-					arrayDone.push(idAjd.get(updatedAt));
-					if(Date(idAjd.get(createdAt).toString().substring(0, 15)) === Date(Date.now()).toString().substring(0, 15)){
-						arrayDoneJour.push(idAjd.get(updatedAt));
-					}
-				}
-			});
-
-			if (arrayDoneJour.length === arrayDone.length){
-					console.log(arrayDoneJour.length); 
-					message.reply('BRAVO ! TU AS FINI TES TACHES POUR AUJOURDHUI !!\n Tu vas recevoir un badge avec le jour où ça à été fait pour qu\'on puisse voir si t\'es endurant');
-					let date = new Date();
-					idAjd.set('finTodoJournalier', date.toString().substring(0, 25));
-					console.log(idAjd);
-					message.channel.send('amb build '+ idAjd.get('finTodoJournalier'));
-			}
-			
-			/*
-			listDailyScrum.map(b => {
-					ajdUp.set(b.createdAt.getTime(), b.updatedAt.getTime());
-					console.log('apres lajout de b.createdAt.getTime(): ' + ajdUp.get(b.updatedAt.getTime()));
-				});
-			
-			//console.log(Daily_scrum.sequelize);
-			
-			console.log(listDailyScrum.get(1));
-			message.channel.send(`amb pin 👍 ${listDailyScrum.get(commandArgs)}`);
-			
-			Daily_scrum.sequelize.query("SELECT * FROM daily_scrum", { type: Daily_scrum.sequelize.QueryTypes.SELECT})
-			  .then(users => { 
-				console.log('yoooo');
-			  }).catch(err => {
-												console.log(`erreur dans la requete raw: ${err}`);
-											});
-			
-			
-			
-			const ajd = await Daily_scrum.findAll({attributes: ['ajd'],})
-					//const idString = ajd.map(t => t.id).join(', ') || 'No tags set.';
-
-											.then(dr => { console.log(dr.dataValues); })
-											.catch(err => {
-												console.log(`erreur dans la recup de teche ajd: ${err}`);
-											});
-			
-			
-			/*
-			fs.readFile("./todoLog.txt", 'utf8', function read(err, data) {
-														if (err) {
-															throw err;
-														}
-
-				//on stocke le buffer de maniere durable
-				//wtf une fois ça marche avec data, une fois const, ...
-				const content = data;
-				//console.log(data);
-				//message.reply(content);
-				const contentUtile = content.substring(2, 197).split('\n');
-				//message.reply(contentUtile);
-				console.log('todoLog.txt lu!');
-				//message.reply(contentUtile[commandArgs] + ' 👍👍👍👍👍');
-				
-				//let longueurInutile = contentUtile.toString().length;
-				console.log(contentUtile);
-				message.channel.send('amb pin 👍 ' + contentUtile[commandArgs*2]);
-				console.log(contentUtile.length);
-				console.log(commandArgs*2);
-				if((commandArgs*2) === (contentUtile.length-3)){
-					message.reply('BRAVO ! TU AS FINI TES TACHES POUR AUJOURDHUI !!\n Tu vas recevoir un badge avec le jour où ça à été fait pour qu\'on puisse voir si t\'es endurant');
-					let date = new Date();
-					stat.finTodoJournalier = date.toString().substring(0, 25);
-					console.log(stat);
-					message.channel.send('amb build '+ stat.finTodoJournalier);
-				}
-			});
-			*/
 		}
 		
 		else if(command === 'pin'){
-			//console.log('yaas');
-			//commandInutile = message.content.slice(PREFIX.length+command.length);
-			//console.log(commandInutile);
-			message.content = message.content.replace('amb pin ', "");
+			
+			//message.content = message.content.replace('amb pin ', "");
 			message.pin();
 		}
 		
@@ -274,8 +175,8 @@ client.on('message', async message => {
 			let statLogTemp = message;
 			console.log(statLogTemp);
 			//le premier elem du tabLog sera tj le log logGlobal
-			idAjd.finTodoJournalier = statLogTemp.content.substring(7, 44);
-			console.log(idAjd);
+			logGlobal.finTache = statLogTemp.content.substring(7, 44);
+			console.log(logGlobal);
 			message.channel.send('amb myspace');
 		}
 		
@@ -294,9 +195,9 @@ client.on('message', async message => {
 			//.setAuthor('Je suis l\'auteur de ce paradis', 'https://i.imgur.com/wSTFkRM.png', 'https://discord.js.org')
 			.setDescription('Nous voici face a ton espace de satisfaction. \n Ici tu as accès à toute les stats dispo pour prendre conscience du chemin parcouru.')
 			//.setThumbnail('https://i.imgur.com/wSTFkRM.png')
-			.addField('Temps de connexion total: ', `${idAjd.finTodoJournalier}`)
+			.addField('Temps de connexion total: ', `${logGlobal.finTache}`)
 			//.addBlankField()
-			.addField('moment où tu as réussis à finir tes taches quotidiennes', `${idAjd.finTodoJournalier}`, true)
+			.addField('moment où tu as réussis à finir tes taches quotidiennes', `${ajdUp.get(done.toString().substring(0, 25)}`, true)
 			.addField('Temps de connexion total par session', 'Some value here', true)
 			.addField('Inline field title', 'Some value here', true)
 			.setImage('https://i.imgur.com/wSTFkRM.png')
