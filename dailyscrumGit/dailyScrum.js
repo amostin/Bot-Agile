@@ -197,7 +197,8 @@ client.on('message', async message => {
 			//.setThumbnail('https://i.imgur.com/wSTFkRM.png')
 			.addField('Temps de connexion total: ', `${logGlobal.finTache}`)
 			//.addBlankField()
-			.addField('moment où tu as réussis à finir tes taches quotidiennes', `${ajdUp.get(done.toString().substring(0, 25)}`, true)
+			//`${ajdUp.get(done.toString().substring(0, 25))}`, 
+			.addField('moment où tu as réussis à finir tes taches quotidiennes', 'yo', true)
 			.addField('Temps de connexion total par session', 'Some value here', true)
 			.addField('Inline field title', 'Some value here', true)
 			.setImage('https://i.imgur.com/wSTFkRM.png')
