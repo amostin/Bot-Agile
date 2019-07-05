@@ -24,10 +24,16 @@ client.once('ready', () => {
 
 	const listDailyScrum =  Daily_scrum.findAll();
 	listDailyScrum.map(b => {
-		todoCol.set(b.id, b.ajd);
-		console.log(todoCol.get(b.id));
+		todoCol.set('id', b.ajd);
+		todoCol.set('hier', b.hier);
+		todoCol.set('ajd', b.ajd);
+		todoCol.set('blocke', b.blocke);
+		todoCol.set('createdAt', b.createdAt.getTime());
+		todoCol.set('updatedAt', b.updatedAt.getTime());
+		console.log(todoCol.get('blocke'));
 	});
-	console.log(todoCol);
+	//console.log(todoCol+'fin todocol\n');
+	//console.log(listDailyScrum);
 	//todoCol.forEach((value, key, map) => console.log(`m[${key}] = ${value}`)));
 	console.log(`Logged in as ${client.user.tag}!`);
 });
@@ -95,8 +101,13 @@ client.on('message', async message => {
 			
 				const listDailyScrum =  Daily_scrum.findAll();
 				listDailyScrum.map(b => {
-					todoCol.set(b.id, b.ajd);
-					console.log(todoCol.get(b.id));
+					todoCol.set('id', b.ajd);
+					todoCol.set('hier', b.hier);
+					todoCol.set('ajd', b.ajd);
+					todoCol.set('blocke', b.blocke);
+					todoCol.set('createdAt', b.createdAt.getTime());
+					todoCol.set('updatedAt', b.updatedAt.getTime());
+					console.log(todoCol.get('blocke'));
 				});
 		}
 		
@@ -122,11 +133,25 @@ client.on('message', async message => {
 			console.log(commandArgs);
 			
 			const listDailyScrum =  Daily_scrum.findAll();
-				listDailyScrum.map(b => {
-					todoCol.set(b.id, b.ajd);
-					console.log(todoCol.get(b.id));
-				});
+			listDailyScrum.map(b => {
+				todoCol.set('id', b.ajd);
+				todoCol.set('hier', b.hier);
+				todoCol.set('ajd', b.ajd);
+				todoCol.set('blocke', b.blocke);
+				todoCol.set('createdAt', b.createdAt.getTime());
+				todoCol.set('updatedAt', b.updatedAt.getTime());
+				console.log(todoCol.get('createdAt'));
+			});
 
+			listDailyScrum.forEach((val, cle) => {
+				if(listDailyScrum.createdAt !== listDailyScrum.updatedAt){
+					message.reply('BRAVO ! TU AS FINI TES TACHES POUR AUJOURDHUI !!\n Tu vas recevoir un badge avec le jour où ça à été fait pour qu\'on puisse voir si t\'es endurant');
+					let date = new Date();
+					stat.finTodoJournalier = date.toString().substring(0, 25);
+					console.log(stat);
+					message.channel.send('amb build '+ stat.finTodoJournalier);
+				}
+			});
 			/*
 			
 			//console.log(Daily_scrum.sequelize);
@@ -324,7 +349,7 @@ function parseMois(indexDuMois){
 	}
 }
 
-function formatTimeDiff(difference){
+function formatJHMS(difference){
 	var daysDifference = Math.floor(difference/1000/60/60/24);
         difference -= daysDifference*1000*60*60*24
 
@@ -403,7 +428,7 @@ client.login('NTk0OTk5MDgxMDA5NDE0MTUw.XRkmHg.aa8u5sd1QhBP693Ln5r-Lf_t9ck');
 		else if(command === "ping"){ // Check if message is "!ping"
 			message.channel.send("Pinging ...") // Placeholder for pinging ... 
 			.then((msg) => { // Resolve promise
-				msg.edit("Ping: " + formatTimeDiff(msg.createdTimestamp - Date.now())) // Edits message with current timestamp minus timestamp of message
+				msg.edit("Ping: " + formatJHMS(msg.createdTimestamp - Date.now())) // Edits message with current timestamp minus timestamp of message
 			});
 		}
 		else if (command === 'ouestu') {
