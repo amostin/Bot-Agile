@@ -1,0 +1,39 @@
+{
+  "name": "misteragenda",
+  "version": "1.0.0",
+  "description": "un bot qui enregistre les echeances pour les rappeler a lavance et les commenter apres",
+  "main": "misterAgenda.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs": "./node_modules/.bin/jsdoc -c jsdoc.json"
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amostin/MostinSchool.git"
+  },
+  "keywords": [
+    "agenda",
+    "scrum",
+    "agile",
+    "organisation",
+    "amusement",
+    "gestion",
+    "partage",
+    "evolution",
+    "horodateur",
+    "daily"
+  ],
+  "author": "ambroise zeno mostin",
+  "license": "",
+  "bugs": {
+    "url": "https://github.com/amostin/MostinSchool/issues"
+  },
+  "homepage": "https://github.com/amostin/MostinSchool#readme",
+  "dependencies": {
+    "discord.js": "^11.5.1",
+    "jsdoc": "^3.6.2",
+    "sequelize": "^5.9.2",
+    "sqlite3": "^4.0.9"
+  }
+}
