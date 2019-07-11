@@ -1,0 +1,26 @@
+{
+  "name": "mostinguide",
+  "version": "1.0.0",
+  "description": "coach de projet",
+  "main": "mostinGuide.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs": "./node_modules/.bin/jsdoc -c jsdoc.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amostin/MostinSchool.git"
+  },
+  "author": "Ambroise Zeno Mostin",
+  "license": "",
+  "bugs": {
+    "url": "https://github.com/amostin/MostinSchool/issues"
+  },
+  "homepage": "https://github.com/amostin/MostinSchool#readme",
+  "dependencies": {
+    "discord.js": "^11.5.1",
+    "jsdoc": "^3.6.2",
+    "sequelize": "^5.9.0",
+    "sqlite3": "^4.0.9"
+  }
+}
