@@ -48,6 +48,13 @@ const PREFIX = 'amb ';
  */
 
 client.once('ready', () => {
+	
+	/**
+	 * @condition 
+	 * @param {object} 
+	 * @description synchronise l'objet avec la base de données
+	 */
+	
 	Agenda.sync({ 
 		//force: true 
 	})
