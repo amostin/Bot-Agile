@@ -1,2 +1,2 @@
 # MostinSchool
-bot qui guide les utilisateurs dans leurs organisation
+bot utile à tracer ses activités
